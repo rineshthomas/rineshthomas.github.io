@@ -3,8 +3,8 @@
   "short_name": "Logicleap",
   "start_url": "index.html",
   "display": "browser",
-  "background_color": "#ffffff",
-  "theme_color": "#142342",
+  "background_color": "#f8faf9",
+  "theme_color": "#17201e",
   "icons": [
     {
       "src": "assets/logo.png",

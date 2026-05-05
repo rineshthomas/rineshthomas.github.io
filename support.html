@@ -21,34 +21,46 @@
   <header class="site-header">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="index.html"><img src="assets/logo.png" alt="Logicleap Technologies logo"><span>Logicleap Technologies<small>Software Engineering</small></span></a>
-      <div class="nav-links"><a href="services.html">Services</a><a href="support.html">Support</a><a class="nav-cta" href="contact.html">Contact</a></div>
+      <div class="nav-links"><a href="services.html">Services</a><a href="support.html" aria-current="page">Support</a><a class="nav-cta" href="contact.html">Contact</a></div>
     </nav>
   </header>
   <main id="main">
     <div class="stripe"></div>
     <section class="page-hero">
-      <div class="page-inner">
-        <p class="eyebrow">Support</p>
+      <div class="page-inner reveal" style="--index: 0">
+        <span class="section-number">Support</span>
         <h1>Product and app support.</h1>
-        <p class="lead">For support with a Logicleap product, app, invoice, or service engagement, email support with the relevant product name and a clear description of the issue.</p>
+        <p class="lead">For support with a Logicleap product, app, invoice, or service engagement, email support with the product name and a clear description of the issue.</p>
       </div>
     </section>
     <section class="page-copy">
-      <div class="page-inner">
-        <h2>Contact support</h2>
-        <p>Email: <a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a></p>
-        <p>For paid apps, in-app purchases, or service-related payment questions, we aim to respond within three business days. If Google Play or another platform contacts us about an urgent product issue, we aim to respond within 24 hours.</p>
+      <div class="page-inner support-grid">
+        <div>
+          <h2>Contact support</h2>
+          <p>Email: <a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a></p>
+          <p>For paid apps, in-app purchases, or service-related payment questions, we aim to respond within three business days. If Google Play or another platform contacts us about an urgent product issue, we aim to respond within 24 hours.</p>
 
-        <h2>What to include</h2>
-        <ul>
-          <li>Product, app, or project name.</li>
-          <li>Device, operating system, browser, or platform where the issue occurs.</li>
-          <li>Steps to reproduce the issue, screenshots, and any order or invoice reference if applicable.</li>
-          <li>The email address used for the product or purchase, if relevant.</li>
-        </ul>
-
-        <h2>Privacy and data requests</h2>
-        <p>For access, correction, or deletion requests, use the instructions on the <a href="data-deletion.html">Data Deletion</a> page or email <a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a>.</p>
+          <h2>Privacy and data requests</h2>
+          <p>For access, correction, or deletion requests, use the instructions on the <a href="data-deletion.html">Data Deletion</a> page or email <a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a>.</p>
+        </div>
+        <aside class="support-list" aria-label="Support request checklist">
+          <article class="support-item">
+            <span>Product</span>
+            <p>Include the product, app, or project name.</p>
+          </article>
+          <article class="support-item">
+            <span>Environment</span>
+            <p>Include device, operating system, browser, or platform details.</p>
+          </article>
+          <article class="support-item">
+            <span>Evidence</span>
+            <p>Include steps to reproduce, screenshots, and any order or invoice reference.</p>
+          </article>
+          <article class="support-item">
+            <span>Account</span>
+            <p>Include the email address used for the product or purchase if relevant.</p>
+          </article>
+        </aside>
       </div>
     </section>
   </main>

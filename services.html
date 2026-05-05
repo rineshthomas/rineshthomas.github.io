@@ -35,37 +35,72 @@
   <header class="site-header">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="index.html"><img src="assets/logo.png" alt="Logicleap Technologies logo"><span>Logicleap Technologies<small>Software Engineering</small></span></a>
-      <div class="nav-links"><a href="services.html">Services</a><a href="support.html">Support</a><a class="nav-cta" href="contact.html">Contact</a></div>
+      <div class="nav-links"><a href="services.html" aria-current="page">Services</a><a href="support.html">Support</a><a class="nav-cta" href="contact.html">Contact</a></div>
     </nav>
   </header>
   <main id="main">
     <div class="stripe"></div>
     <section class="page-hero">
-      <div class="page-inner">
-        <p class="eyebrow">Services</p>
-        <h1>Software development services for product teams.</h1>
-        <p class="lead">Logicleap provides custom software engineering services. Project scope, delivery timeline, pricing, and currency are defined in the written proposal or invoice for each engagement.</p>
+      <div class="page-inner reveal" style="--index: 0">
+        <span class="section-number">Services</span>
+        <h1>Software services for teams that need direct engineering output.</h1>
+        <p class="lead">Project scope, timeline, pricing, and currency are defined in the written proposal or invoice for each engagement. Services are delivered digitally.</p>
       </div>
     </section>
+
     <section class="section">
       <div class="section-inner service-list service-list-wide">
-        <article class="service-row reveal" style="--index: 0"><span class="service-kicker">Game systems</span><h3>Game Development</h3><p>Gameplay features, tools, integrations, live-ops support, and production debugging.</p></article>
-        <article class="service-row reveal" style="--index: 1"><span class="service-kicker">AI operations</span><h3>AI Workflow Tools</h3><p>Practical AI-assisted internal tools for content workflows, automation, and product operations.</p></article>
-        <article class="service-row reveal" style="--index: 2"><span class="service-kicker">Product interfaces</span><h3>Web Applications</h3><p>Company websites, dashboards, portals, forms, and responsive product interfaces.</p></article>
-        <article class="service-row reveal" style="--index: 3"><span class="service-kicker">Backend delivery</span><h3>Cloud Software</h3><p>Backend services, APIs, integrations, deployment support, and maintainable infrastructure.</p></article>
+        <article class="service-row reveal" style="--index: 0">
+          <span class="service-kicker">Game systems</span>
+          <h3>Game development</h3>
+          <p>Gameplay features, tools, integrations, live-ops support, production debugging, release preparation, and technical reviews.</p>
+        </article>
+        <article class="service-row reveal" style="--index: 1">
+          <span class="service-kicker">AI operations</span>
+          <h3>AI workflow tools</h3>
+          <p>Internal tools for content workflows, automation, product operations, documentation, and controlled generative AI use.</p>
+        </article>
+        <article class="service-row reveal" style="--index: 2">
+          <span class="service-kicker">Product interfaces</span>
+          <h3>Web applications</h3>
+          <p>Company websites, dashboards, portals, forms, and responsive interfaces with clear support and policy surfaces.</p>
+        </article>
+        <article class="service-row reveal" style="--index: 3">
+          <span class="service-kicker">Backend delivery</span>
+          <h3>Cloud software</h3>
+          <p>APIs, integrations, deployment support, operational tooling, and maintainable infrastructure for digital products.</p>
+        </article>
       </div>
     </section>
-    <section class="section alt">
-      <div class="section-inner">
-        <div class="section-head">
-          <p class="eyebrow">Delivery</p>
-          <h2>How projects are handled.</h2>
-          <p>Services are delivered digitally. There is no physical shipping or return process for software-service engagements.</p>
+
+    <section class="section alt" aria-labelledby="delivery-heading">
+      <div class="section-inner capability-layout">
+        <div class="section-title">
+          <span class="section-number">Delivery</span>
+          <h2 id="delivery-heading">A practical project path.</h2>
+          <p>Software work is handled through explicit scope, visible checkpoints, and documented delivery. There is no physical shipping or return process for software-service engagements.</p>
         </div>
         <div class="process-list">
-          <article><span>Scope</span><h3>Define the work</h3><p>Define the problem, deliverables, assumptions, access requirements, and expected outcome.</p></article>
-          <article><span>Build</span><h3>Implement with checkpoints</h3><p>Implement the agreed work with clear updates and testable milestones.</p></article>
-          <article><span>Support</span><h3>Document and support</h3><p>Document the result, handle questions, and support agreed follow-up work.</p></article>
+          <article>
+            <span>Scope</span>
+            <h3>Define the work</h3>
+            <p>Clarify the problem, deliverables, assumptions, access needs, acceptance criteria, and expected handoff.</p>
+          </article>
+          <article>
+            <span>Build</span>
+            <h3>Implement with checkpoints</h3>
+            <p>Build the agreed work with concise updates, reviewable increments, and testable milestones.</p>
+          </article>
+          <article>
+            <span>Verify</span>
+            <h3>Check the result</h3>
+            <p>Verify the visible workflow, important edge cases, deployment surface, and documentation needed for support.</p>
+          </article>
+          <article>
+            <span>Support</span>
+            <h3>Handoff and support</h3>
+            <p>Document the result, handle questions, and support agreed follow-up work after delivery.</p>
+          </article>
         </div>
       </div>
     </section>

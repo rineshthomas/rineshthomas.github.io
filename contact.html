@@ -15,29 +15,41 @@
   <meta property="og:description" content="Business, support, and privacy contact information for Logicleap Technologies.">
   <meta property="og:url" content="https://logicleaptechnologies.com/contact.html">
   <meta property="og:image" content="https://logicleaptechnologies.com/assets/og-image.png">
+  <script src="site.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="index.html"><img src="assets/logo.png" alt="Logicleap Technologies logo"><span>Logicleap Technologies<small>Software Engineering</small></span></a>
-      <div class="nav-links"><a href="services.html">Services</a><a href="support.html">Support</a><a class="nav-cta" href="contact.html">Contact</a></div>
+      <div class="nav-links"><a href="services.html">Services</a><a href="support.html">Support</a><a class="nav-cta" href="contact.html" aria-current="page">Contact</a></div>
     </nav>
   </header>
   <main id="main">
     <div class="stripe"></div>
     <section class="page-hero">
-      <div class="page-inner">
-        <p class="eyebrow">Contact</p>
-        <h1>Contact Logicleap Technologies.</h1>
-        <p class="lead">Use the relevant company email address below for business inquiries, app support, privacy requests, or security reports.</p>
+      <div class="page-inner reveal" style="--index: 0">
+        <span class="section-number">Contact</span>
+        <h1>Send the project context, not a cold form.</h1>
+        <p class="lead">Use the relevant company email address for business inquiries, app support, privacy requests, or security reports.</p>
       </div>
     </section>
     <section class="section">
       <div class="section-inner contact-layout">
-        <div class="contact-directory">
-          <article><span>Business inquiries</span><a href="mailto:contact@logicleaptechnologies.com">contact@logicleaptechnologies.com</a></article>
-          <article><span>App support</span><a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a></article>
+        <div>
+          <div class="contact-directory">
+            <article>
+              <span>Business inquiries</span>
+              <a href="mailto:contact@logicleaptechnologies.com">contact@logicleaptechnologies.com</a>
+              <button class="copy-button" type="button" data-copy="contact@logicleaptechnologies.com">Copy</button>
+            </article>
+            <article>
+              <span>App support</span>
+              <a href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a>
+              <button class="copy-button" type="button" data-copy="support@logicleaptechnologies.com">Copy</button>
+            </article>
+          </div>
+          <p class="copy-status" data-copy-status aria-live="polite"></p>
         </div>
         <aside class="location-panel">
           <span>Business location</span>
