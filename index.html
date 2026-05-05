@@ -1,442 +1,156 @@
-<!DOCTYPE html>
-<!-- ==============================
-    Project:        Metronic "Acidus" Frontend Freebie - Responsive HTML Template Based On Twitter Bootstrap 3.3.4
-    Version:        1.0
-    Author:         KeenThemes
-    Primary use:    Corporate, Business Themes.
-    Email:          support@keenthemes.com
-    Follow:         http://www.twitter.com/keenthemes
-    Like:           http://www.facebook.com/keenthemes
-    Website:        http://www.keenthemes.com
-    Premium:        Premium Metronic Admin Theme: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
-================================== -->
-<html lang="en" class="no-js">
-    <!-- BEGIN HEAD -->
-    <head>
-        <meta charset="utf-8"/>
-        <title>Logicleap Technologies Private Limited - Innovative Technology Solutions</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta content="width=device-width, initial-scale=1" name="viewport"/>
-        <meta content="Logicleap Technologies Private Limited - Leading provider of innovative technology solutions and digital transformation services" name="description"/>
-        <meta content="Logicleap Technologies" name="author"/>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logicleap Technologies | Games, AI, Web and Cloud Software</title>
+  <meta name="description" content="Logicleap Technologies builds reliable software for product teams, including game systems, AI workflow tools, web applications, and cloud-backed products.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="google-site-verification" content="8kgn95cwfLlBxdoWdciYKX4p5Zlr5B6ixWKV4EsdFUs">
+  <link rel="canonical" href="https://logicleaptechnologies.com/">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Logicleap Technologies">
+  <meta property="og:description" content="Software engineering for games, AI workflow tools, web applications, and cloud-backed products.">
+  <meta property="og:url" content="https://logicleaptechnologies.com/">
+  <meta property="og:image" content="https://logicleaptechnologies.com/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Logicleap Technologies Private Limited",
+    "url": "https://logicleaptechnologies.com/",
+    "logo": "https://logicleaptechnologies.com/assets/logo.png",
+    "email": "contact@logicleaptechnologies.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Pune",
+      "addressRegion": "Maharashtra",
+      "addressCountry": "IN"
+    },
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Logicleap Technologies",
+    "url": "https://logicleaptechnologies.com/"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Logicleap Technologies logo">
+        <span>Logicleap Technologies<small>Software Engineering</small></span>
+      </a>
+      <div class="nav-links">
+        <a href="services.html">Services</a>
+        <a href="support.html">Support</a>
+        <a class="nav-cta" href="contact.html">Contact</a>
+      </div>
+    </nav>
+  </header>
 
-        <!-- GLOBAL MANDATORY STYLES -->
-        <link href="http://fonts.googleapis.com/css?family=Hind:300,400,500,600,700" rel="stylesheet" type="text/css">
-        <link href="vendor/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
-        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-
-        <!-- PAGE LEVEL PLUGIN STYLES -->
-        <link href="css/animate.css" rel="stylesheet">
-        <link href="vendor/swiper/css/swiper.min.css" rel="stylesheet" type="text/css"/>
-
-        <!-- THEME STYLES -->
-        <link href="css/layout.min.css" rel="stylesheet" type="text/css"/>
-
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="favicon.ico"/>
-    </head>
-    <!-- END HEAD -->
-
-    <!-- BODY -->
-    <body>
-
-        <!--========== HEADER ==========-->
-        <header class="header">
-            <!-- Navbar -->
-            <nav class="navbar" role="navigation">
-                <div class="container">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="menu-container">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="toggle-icon"></span>
-                        </button>
-
-                        <!-- Logo -->
-                        <div class="navbar-logo">
-                            <a class="navbar-logo-wrap" href="index.html">
-                                <img class="navbar-logo-img" src="img/logo.png" alt="Logicleap Technologies Logo">
-                            </a>
-                        </div>
-                        <!-- End Logo -->
-                    </div>
-
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="collapse navbar-collapse nav-collapse">
-                        <div class="menu-container">
-                            <ul class="navbar-nav navbar-nav-right">
-                                <!-- Home -->
-                                <li class="nav-item">
-                                    <a class="nav-item-child active" href="index.html">
-                                        Home
-                                    </a>
-                                </li>
-                                <!-- End Home -->
-
-                                <!-- About -->
-                                <li class="nav-item">
-                                    <a class="nav-item-child" href="about.html">
-                                        About Us
-                                    </a>
-                                </li>
-                                <!-- End About -->
-
-                                <!-- Services -->
-                                <li class="nav-item">
-                                    <a class="nav-item-child" href="work.html">
-                                        Services
-                                    </a>
-                                </li>
-                                <!-- End Services -->
-
-                                <!-- Contact -->
-                                <li class="nav-item">
-                                    <a class="nav-item-child" href="contact.html">
-                                        Contact
-                                    </a>
-                                </li>
-                                <!-- End Contact -->
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- End Navbar Collapse -->
-                </div>
-            </nav>
-            <!-- Navbar -->
-        </header>
-        <!--========== END HEADER ==========-->
-
-        <!--========== PAGE LAYOUT ==========-->
-        <!-- Work -->
-        <div class="bg-color-sky-light">
-            <div class="content-md container">
-                <!-- Masonry Grid -->
-                <div class="masonry-grid">
-                    <div class="masonry-grid-sizer col-xs-6 col-sm-6 col-md-6"></div>
-                    <div class="masonry-grid-item col-xs-12 col-sm-6 col-md-6">
-                        <!-- Work -->
-                        <div class="work">
-                            <div class="work-overlay">
-                                <img class="full-width img-responsive" src="img/595x483/01.jpg" alt="Portfolio Image">
-                            </div>
-                            <div class="work-content">
-                                <h3 class="color-white margin-b-5">Software Development</h3>
-                                <p class="color-white margin-b-0">Custom software solutions tailored to your business needs</p>
-                            </div>
-                            <a class="content-wrapper-link" href="#"></a>
-                        </div>
-                        <!-- End Work -->
-                    </div>
-                    <div class="masonry-grid-item col-xs-6 col-sm-6 col-md-6">
-                        <!-- Work -->
-                        <div class="work">
-                            <div class="work-overlay">
-                                <img class="full-width img-responsive" src="img/595x240/01.jpg" alt="Portfolio Image">
-                            </div>
-                            <div class="work-content">
-                                <h3 class="color-white margin-b-5">Digital Transformation</h3>
-                                <p class="color-white margin-b-0">Modernizing your business with cutting-edge technology</p>
-                            </div>
-                            <a class="content-wrapper-link" href="#"></a>
-                        </div>
-                        <!-- End Work -->
-                    </div>
-                    <div class="masonry-grid-item col-xs-6 col-sm-6 col-md-6">
-                        <!-- Work -->
-                        <div class="work">
-                            <div class="work-overlay">
-                                <img class="full-width img-responsive" src="img/595x240/02.jpg" alt="Portfolio Image">
-                            </div>
-                            <div class="work-content">
-                                <h3 class="color-white margin-b-5">Cloud Solutions</h3>
-                                <p class="color-white margin-b-0">Scalable cloud infrastructure and migration services</p>
-                            </div>
-                            <a class="content-wrapper-link" href="#"></a>
-                        </div>
-                        <!-- End Work -->
-                    </div>
-                </div>
-                <!-- End Masonry Grid -->
-            </div>
+  <main id="main">
+    <section class="hero">
+      <img class="hero-mark" src="assets/logo.png" alt="">
+      <div class="hero-inner">
+        <div class="hero-content">
+          <p class="eyebrow">Games · AI · Cloud software</p>
+          <h1>Logicleap Technologies</h1>
+          <p class="hero-copy">We build reliable software for product teams, from game systems and internal tools to AI-assisted workflows and cloud-backed web applications.</p>
+          <div class="actions">
+            <a class="button primary" href="contact.html">Contact Us</a>
+            <a class="button secondary" href="services.html">Explore Services</a>
+          </div>
         </div>
-        <!-- End Work -->
+      </div>
+    </section>
 
-        <!-- Features -->
-        <div class="section-seperator">
-            <div class="content-md container">
-                <div class="row">
-                    <div class="col-sm-4 sm-margin-b-50">
-                        <div class="wow fadeInLeft" data-wow-duration=".3" data-wow-delay=".3s">
-                            <h3>Custom Software Development</h3>
-                            <p>We develop bespoke software solutions that align perfectly with your business processes, ensuring maximum efficiency and competitive advantage in your industry.</p>
-                            <a class="link" href="#">Learn More</a>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 sm-margin-b-50">
-                        <div class="wow fadeInLeft" data-wow-duration=".3" data-wow-delay=".2s">
-                            <h3>Digital Transformation</h3>
-                            <p>Transform your business operations with our comprehensive digital solutions, from legacy system modernization to implementing cutting-edge technologies.</p>
-                            <a class="link" href="#">Discover More</a>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="wow fadeInLeft" data-wow-duration=".3" data-wow-delay=".1s">
-                            <h3>Cloud Solutions</h3>
-                            <p>Leverage the power of cloud computing with our scalable infrastructure solutions, migration services, and ongoing support for optimal performance.</p>
-                            <a class="link" href="#">Explore Solutions</a>
-                        </div>
-                    </div>
-                </div>
-                <!--// end row -->
-            </div>
+    <section class="section" aria-labelledby="services-heading">
+      <div class="section-inner">
+        <div class="section-head">
+          <p class="eyebrow">Services</p>
+          <h2 id="services-heading">Focused engineering for modern software products.</h2>
+          <p>Logicleap works with teams that need practical implementation, clean handoffs, and dependable technical ownership.</p>
         </div>
-        <!-- End Features -->
-
-        <!-- Industries We Serve -->
-        <div class="content-md container">
-            <div class="row margin-b-40">
-                <div class="col-sm-8">
-                    <h2>Industries We Serve</h2>
-                    <p>We partner with organizations across diverse industries, bringing specialized knowledge and innovative solutions to drive digital transformation and business growth.</p>
-                </div>
-            </div>
-            <!--// end row -->
-
-            <div class="row">
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Financial Services</h5>
-                    <p>Banking, Insurance, FinTech</p>
-                </div>
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Healthcare & Life Sciences</h5>
-                    <p>Healthcare Systems, Medical Devices</p>
-                </div>
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Manufacturing</h5>
-                    <p>Industrial Automation, Supply Chain</p>
-                </div>
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Retail & E-commerce</h5>
-                    <p>Online Platforms, Point of Sale</p>
-                </div>
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Education & Training</h5>
-                    <p>Learning Management, EdTech</p>
-                </div>
-                <div class="col-sm-4 sm-margin-b-30">
-                    <h5>Logistics & Transportation</h5>
-                    <p>Fleet Management, Route Optimization</p>
-                </div>
-            </div>
+        <div class="grid-4">
+          <article class="card">
+            <div class="icon">G</div>
+            <h3>Game Development</h3>
+            <p>Gameplay features, tools, systems, and technical support for game teams.</p>
+          </article>
+          <article class="card">
+            <div class="icon">AI</div>
+            <h3>AI Workflow Tools</h3>
+            <p>Internal tools and automation that make generative AI useful in real production work.</p>
+          </article>
+          <article class="card">
+            <div class="icon">W</div>
+            <h3>Web Applications</h3>
+            <p>Responsive websites, dashboards, portals, and product interfaces.</p>
+          </article>
+          <article class="card">
+            <div class="icon">C</div>
+            <h3>Cloud Software</h3>
+            <p>Backend services, integrations, deployment support, and maintainable product infrastructure.</p>
+          </article>
         </div>
-        <!-- End Industries We Serve -->
+      </div>
+    </section>
 
-        <!-- Work -->
-        <div class="bg-color-sky-light overflow-h">
-            <div class="content-md container">
-                <div class="row margin-b-40">
-                    <div class="col-sm-6">
-                        <h2>Our Solutions</h2>
-                        <p>Explore our comprehensive portfolio of technology solutions designed to accelerate your business transformation and digital innovation journey.</p>
-                    </div>
-                </div>
-                <!--// end row -->
-
-                <!-- Services Grid -->
-                <div class="row">
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>Enterprise Software Development</h4>
-                            <p>Custom enterprise applications built with modern frameworks and scalable architecture to meet your specific business requirements.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>Cloud Migration & Infrastructure</h4>
-                            <p>Seamless migration to cloud platforms with optimized infrastructure setup, monitoring, and maintenance for maximum performance.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>Digital Transformation</h4>
-                            <p>Comprehensive digital transformation strategies that modernize your business processes and enhance operational efficiency.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>API Development & Integration</h4>
-                            <p>Robust API solutions and third-party integrations to connect your systems and enable seamless data flow.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>DevOps & Automation</h4>
-                            <p>Streamlined development and deployment processes with automated testing, continuous integration, and delivery pipelines.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 sm-margin-b-50">
-                        <div class="service-block text-center">
-                            <h4>Technical Consulting</h4>
-                            <p>Expert technical guidance and strategic planning to help you make informed technology decisions and optimize your IT investments.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Services Grid -->
-            </div>
+    <section class="section dark" aria-labelledby="about-heading">
+      <div class="section-inner split">
+        <div>
+          <p class="eyebrow">About</p>
+          <h2 id="about-heading">Software engineering with product context.</h2>
+          <p class="lead">Logicleap Technologies is a software company based in Pune, India. We help product teams design, build, and support software that needs both technical depth and practical delivery judgment.</p>
         </div>
-        <!-- End Work -->
-
-        <!-- Company Stats -->
-        <div class="content-md container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <h2>Why Choose Logicleap Technologies</h2>
-                    <div class="row margin-t-40">
-                        <div class="col-sm-3 sm-margin-b-30">
-                            <div class="text-center">
-                                <h3 class="color-link">5+</h3>
-                                <p>Years of Excellence</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 sm-margin-b-30">
-                            <div class="text-center">
-                                <h3 class="color-link">50+</h3>
-                                <p>Projects Delivered</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 sm-margin-b-30">
-                            <div class="text-center">
-                                <h3 class="color-link">100%</h3>
-                                <p>Client Satisfaction</p>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 sm-margin-b-30">
-                            <div class="text-center">
-                                <h3 class="color-link">24/7</h3>
-                                <p>Technical Support</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--// end row -->
+        <div class="grid-2">
+          <div class="card"><h3>Clear scope</h3><p>Work starts with the problem, constraints, and expected outcome.</p></div>
+          <div class="card"><h3>Reliable delivery</h3><p>Implementation is kept understandable, maintainable, and ready to hand over.</p></div>
+          <div class="card"><h3>Senior ownership</h3><p>Engineering decisions are made with production impact in mind.</p></div>
+          <div class="card"><h3>Long-term support</h3><p>Shipped work is documented and supported beyond the first release.</p></div>
         </div>
-        <!-- End Company Stats -->
+      </div>
+    </section>
 
-        <!-- Company Information -->
-        <div class="bg-color-sky-light">
-            <div class="content-md container">
-                <div class="row margin-b-40">
-                    <div class="col-sm-8">
-                        <h2>About Logicleap Technologies</h2>
-                        <p>Logicleap Technologies Private Limited is a leading technology solutions provider specializing in digital transformation, custom software development, and cloud solutions. We help businesses modernize their operations and achieve sustainable growth through innovative technology implementations.</p>
-                    </div>
-                </div>
-                <!--// end row -->
-
-                <div class="row">
-                    <div class="col-sm-4 sm-margin-b-50">
-                        <h4>Our Mission</h4>
-                        <p>To empower businesses with cutting-edge technology solutions that drive efficiency, innovation, and competitive advantage in the digital marketplace.</p>
-                    </div>
-                    
-                    <div class="col-sm-4 sm-margin-b-50">
-                        <h4>Our Vision</h4>
-                        <p>To be the trusted technology partner for organizations seeking transformative digital solutions and sustainable business growth.</p>
-                    </div>
-                    
-                    <div class="col-sm-4 sm-margin-b-50">
-                        <h4>Our Values</h4>
-                        <p>Excellence in delivery, innovation in approach, transparency in communication, and commitment to long-term client success.</p>
-                    </div>
-                </div>
-                <!--// end row -->
-            </div>
+    <section class="section alt" aria-labelledby="contact-heading">
+      <div class="section-inner">
+        <div class="contact-panel">
+          <div>
+            <p class="eyebrow">Contact</p>
+            <h2 id="contact-heading">Tell us what you need to build.</h2>
+            <p class="lead">For new projects, partnerships, app support, or company inquiries, contact Logicleap through the company email address.</p>
+          </div>
+          <div class="contact-actions">
+            <a class="email-link primary" href="mailto:contact@logicleaptechnologies.com">contact@logicleaptechnologies.com</a>
+            <a class="email-link" href="mailto:support@logicleaptechnologies.com">support@logicleaptechnologies.com</a>
+          </div>
         </div>
-        <!-- End Company Information -->
-        <!--========== END PAGE LAYOUT ==========-->
+      </div>
+    </section>
+  </main>
 
-        <!--========== FOOTER ==========-->
-        <footer class="footer">
-            <!-- Links -->
-            <div class="section-seperator">
-                <div class="content-md container">
-                    <div class="row">
-                        <div class="col-sm-2 sm-margin-b-30">
-                            <!-- List -->
-                            <ul class="list-unstyled footer-list">
-                                <li class="footer-list-item"><a href="index.html">Home</a></li>
-                                <li class="footer-list-item"><a href="about.html">About Us</a></li>
-                                <li class="footer-list-item"><a href="work.html">Services</a></li>
-                                <li class="footer-list-item"><a href="contact.html">Contact</a></li>
-                            </ul>
-                            <!-- End List -->
-                        </div>
-                        <div class="col-sm-2 sm-margin-b-30">
-                            <!-- List -->
-                            <ul class="list-unstyled footer-list">
-                                <li class="footer-list-item"><a href="#">LinkedIn</a></li>
-                                <li class="footer-list-item"><a href="#">Twitter</a></li>
-                                <li class="footer-list-item"><a href="#">GitHub</a></li>
-                                <li class="footer-list-item"><a href="#">Blog</a></li>
-                            </ul>
-                            <!-- End List -->
-                        </div>
-                        <div class="col-sm-3">
-                            <!-- List -->
-                            <ul class="list-unstyled footer-list">
-                                <li class="footer-list-item"><a href="#">Newsletter</a></li>
-                                <li class="footer-list-item"><a href="#">Privacy Policy</a></li>
-                                <li class="footer-list-item"><a href="#">Terms of Service</a></li>
-                            </ul>
-                            <!-- End List -->
-                        </div>
-                    </div>
-                    <!--// end row -->
-                </div>
-            </div>
-            <!-- End Links -->
-
-            <!-- Copyright -->
-            <div class="content container">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <img class="footer-logo" src="img/logo.png" alt="Logicleap Technologies Logo">
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <p class="margin-b-0">&copy; 2024 <a class="fweight-700" href="/">Logicleap Technologies Private Limited</a></p>
-                    </div>
-                </div>
-                <!--// end row -->
-            </div>
-            <!-- End Copyright -->
-        </footer>
-        <!--========== END FOOTER ==========-->
-
-        <!-- Back To Top -->
-        <a href="javascript:void(0);" class="js-back-to-top back-to-top">Top</a>
-
-        <!-- JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-        <!-- CORE PLUGINS -->
-        <script src="vendor/jquery.min.js" type="text/javascript"></script>
-        <script src="vendor/jquery-migrate.min.js" type="text/javascript"></script>
-        <script src="vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-
-        <!-- PAGE LEVEL PLUGINS -->
-        <script src="vendor/jquery.easing.js" type="text/javascript"></script>
-        <script src="vendor/jquery.back-to-top.js" type="text/javascript"></script>
-        <script src="vendor/jquery.smooth-scroll.js" type="text/javascript"></script>
-        <script src="vendor/jquery.wow.min.js" type="text/javascript"></script>
-        <script src="vendor/swiper/js/swiper.jquery.min.js" type="text/javascript"></script>
-        <script src="vendor/masonry/jquery.masonry.pkgd.min.js" type="text/javascript"></script>
-        <script src="vendor/masonry/imagesloaded.pkgd.min.js" type="text/javascript"></script>
-
-        <!-- PAGE LEVEL SCRIPTS -->
-        <script src="js/layout.min.js" type="text/javascript"></script>
-        <script src="js/components/wow.min.js" type="text/javascript"></script>
-        <script src="js/components/swiper.min.js" type="text/javascript"></script>
-        <script src="js/components/masonry.min.js" type="text/javascript"></script>
-
-    </body>
-    <!-- END BODY -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>Logicleap Technologies Private Limited</strong><br>Pune, Maharashtra, India</div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+        <a href="refund-policy.html">Refund Policy</a>
+        <a href="data-deletion.html">Data Deletion</a>
+        <a href="security.html">Security</a>
+      </nav>
+    </div>
+  </footer>
+</body>
 </html>

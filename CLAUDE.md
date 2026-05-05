@@ -1,62 +1,58 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This repository hosts the static GitHub Pages website for `logicleaptechnologies.com`.
 
 ## Project Overview
 
-This is a static website built using the Metronic "Acidus" HTML template, a responsive corporate/business theme based on Bootstrap 3.3.4. The site is hosted on GitHub Pages with a custom domain (logicleaptechnologies.com).
+The site is a plain static HTML/CSS website with no build step. It is designed for:
 
-## Development Commands
+- Company homepage and service pages.
+- Google Play style privacy, support, and data deletion URLs.
+- Stripe/payment-review style refund, terms, contact, and security pages.
+- Search engine crawling with `robots.txt`, `sitemap.xml`, canonical URLs, and basic structured data.
 
-### Build System
-The project uses Gulp for build automation. All build tools are located in the `dev-tools/` directory:
+## Development
 
-- `cd dev-tools && npm install` - Install build dependencies
-- `cd dev-tools && gulp` - Run default build task (compiles Sass, minifies CSS/JS, validates HTML, watches for changes)
-- `cd dev-tools && gulp sass` - Compile Sass files to CSS
-- `cd dev-tools && gulp minify-css` - Minify CSS files
-- `cd dev-tools && gulp rtlcss` - Generate RTL (right-to-left) CSS
-- `cd dev-tools && gulp uglify` - Minify JavaScript files
-- `cd dev-tools && gulp htmlhint` - Validate HTML files
+Open `index.html` directly in a browser, or serve the repository root locally:
 
-### Live Development
-- `cd dev-tools && gulp watch` - Watch for file changes and auto-build
+```sh
+python3 -m http.server 4188 --bind 127.0.0.1
+```
 
-## Architecture
+Then open:
 
-### File Structure
-- **HTML files**: Main pages (`index.html`, `about.html`, `work.html`, `contact.html`) in root directory
-- **Sass source**: `/sass/` directory with modular SCSS architecture
-- **CSS output**: `/css/` directory (generated from Sass)
-- **JavaScript**: `/js/` directory with components and layout files
-- **Images**: `/img/` directory with organized size-based subdirectories
-- **Vendor libraries**: `/vendor/` directory for third-party dependencies
-- **Build tools**: `/dev-tools/` directory containing Gulp configuration
+```text
+http://127.0.0.1:4188/
+```
 
-### Sass Architecture
-The Sass is organized in a modular structure:
-- `_variables.scss` and `_mixins.scss` for global definitions
-- `base/` - Base styles and resets
-- `components/` - Reusable UI components (buttons, blockquotes)
-- `layout/` - Header and footer styles
-- `pages/` - Page-specific styles
-- `plugins/` - Third-party plugin styles
-- `utils/` - Utility classes and helpers
-- `gui/` - Custom GUI components
+## Important Files
 
-### JavaScript Components
-- Masonry grid layout for portfolio items
-- Swiper.js for carousels and testimonials
-- WOW.js for scroll animations
-- Custom layout and component scripts
-
-## Template Features
-- Responsive Bootstrap 3.3.4 based layout
-- Masonry grid portfolio layout
-- Swiper carousels for clients and testimonials
-- Smooth scroll and back-to-top functionality
-- CSS animations with WOW.js
-- RTL language support
+- `index.html` - homepage
+- `services.html` - services overview
+- `contact.html` - public business contact page
+- `support.html` - app/product support page
+- `privacy-policy.html` - public privacy policy URL
+- `data-deletion.html` - account/data deletion instructions
+- `refund-policy.html` - refund, cancellation, fulfillment, and payment policy
+- `security.html` - security and payment handling information
+- `terms.html` - terms of service
+- `robots.txt` - crawler permissions
+- `sitemap.xml` - search sitemap
+- `.well-known/security.txt` - security contact
+- `.nojekyll` - required so GitHub Pages serves dot-prefixed folders such as `.well-known`
+- `CNAME` - custom domain configuration for `logicleaptechnologies.com`
+- `assets/logo.png` - logo/favicon/hero asset
+- `assets/og-image.png` - social preview image
 
 ## Deployment
-The site is configured for GitHub Pages deployment with CNAME file pointing to logicleaptechnologies.com.
+
+GitHub Pages serves the `main` branch from the repository root.
+
+Deployment path:
+
+1. Edit static files in the root.
+2. Verify locally with a simple HTTP server.
+3. Commit to `main`.
+4. Push to `origin/main`.
+
+Do not remove `CNAME` or `.nojekyll`.

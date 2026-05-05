@@ -1,0 +1,3 @@
+Contact: mailto:support@logicleaptechnologies.com
+Preferred-Languages: en
+Canonical: https://logicleaptechnologies.com/.well-known/security.txt
