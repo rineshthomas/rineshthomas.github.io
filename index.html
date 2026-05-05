@@ -61,9 +61,8 @@
 
   <main id="main">
     <section class="hero">
-      <img class="hero-mark" src="assets/logo.png" alt="">
       <div class="hero-inner">
-        <div class="hero-content">
+        <div class="hero-content reveal" style="--index: 0">
           <p class="eyebrow">Games · AI · Cloud software</p>
           <h1>Logicleap Technologies</h1>
           <p class="hero-copy">We build reliable software for product teams, from game systems and internal tools to AI-assisted workflows and cloud-backed web applications.</p>
@@ -72,34 +71,55 @@
             <a class="button secondary" href="services.html">Explore Services</a>
           </div>
         </div>
+        <aside class="hero-board reveal" style="--index: 1" aria-label="Logicleap service focus">
+          <div class="board-topline">
+            <img src="assets/logo.png" alt="">
+            <span>Software Engineering</span>
+          </div>
+          <div class="board-list">
+            <div class="board-row">
+              <span>Game systems</span>
+              <p>Gameplay features, tools, integrations, and production debugging.</p>
+            </div>
+            <div class="board-row">
+              <span>AI workflow tools</span>
+              <p>Practical automation for content, operations, and internal product work.</p>
+            </div>
+            <div class="board-row">
+              <span>Web and cloud</span>
+              <p>Web applications, APIs, dashboards, and maintainable infrastructure.</p>
+            </div>
+          </div>
+          <p class="board-note">Pune, Maharashtra · Digital software services</p>
+        </aside>
       </div>
     </section>
 
     <section class="section" aria-labelledby="services-heading">
-      <div class="section-inner">
-        <div class="section-head">
+      <div class="section-inner service-map">
+        <div class="section-head service-map-head">
           <p class="eyebrow">Services</p>
           <h2 id="services-heading">Focused engineering for modern software products.</h2>
           <p>Logicleap works with teams that need practical implementation, clean handoffs, and dependable technical ownership.</p>
         </div>
-        <div class="grid-4">
-          <article class="card">
-            <div class="icon">G</div>
+        <div class="service-list">
+          <article class="service-row reveal" style="--index: 0">
+            <span class="service-kicker">Game systems</span>
             <h3>Game Development</h3>
             <p>Gameplay features, tools, systems, and technical support for game teams.</p>
           </article>
-          <article class="card">
-            <div class="icon">AI</div>
+          <article class="service-row reveal" style="--index: 1">
+            <span class="service-kicker">AI operations</span>
             <h3>AI Workflow Tools</h3>
             <p>Internal tools and automation that make generative AI useful in real production work.</p>
           </article>
-          <article class="card">
-            <div class="icon">W</div>
+          <article class="service-row reveal" style="--index: 2">
+            <span class="service-kicker">Product interfaces</span>
             <h3>Web Applications</h3>
             <p>Responsive websites, dashboards, portals, and product interfaces.</p>
           </article>
-          <article class="card">
-            <div class="icon">C</div>
+          <article class="service-row reveal" style="--index: 3">
+            <span class="service-kicker">Backend delivery</span>
             <h3>Cloud Software</h3>
             <p>Backend services, integrations, deployment support, and maintainable product infrastructure.</p>
           </article>
@@ -114,11 +134,27 @@
           <h2 id="about-heading">Software engineering with product context.</h2>
           <p class="lead">Logicleap Technologies is a software company based in Pune, India. We help product teams design, build, and support software that needs both technical depth and practical delivery judgment.</p>
         </div>
-        <div class="grid-2">
-          <div class="card"><h3>Clear scope</h3><p>Work starts with the problem, constraints, and expected outcome.</p></div>
-          <div class="card"><h3>Reliable delivery</h3><p>Implementation is kept understandable, maintainable, and ready to hand over.</p></div>
-          <div class="card"><h3>Senior ownership</h3><p>Engineering decisions are made with production impact in mind.</p></div>
-          <div class="card"><h3>Long-term support</h3><p>Shipped work is documented and supported beyond the first release.</p></div>
+        <div class="principle-list">
+          <article>
+            <span>Scope</span>
+            <h3>Clear scope</h3>
+            <p>Work starts with the problem, constraints, and expected outcome.</p>
+          </article>
+          <article>
+            <span>Delivery</span>
+            <h3>Reliable delivery</h3>
+            <p>Implementation is kept understandable, maintainable, and ready to hand over.</p>
+          </article>
+          <article>
+            <span>Ownership</span>
+            <h3>Senior ownership</h3>
+            <p>Engineering decisions are made with production impact in mind.</p>
+          </article>
+          <article>
+            <span>Support</span>
+            <h3>Long-term support</h3>
+            <p>Shipped work is documented and supported beyond the first release.</p>
+          </article>
         </div>
       </div>
     </section>
