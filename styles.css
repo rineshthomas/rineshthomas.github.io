@@ -905,6 +905,37 @@ tr:last-child td {
   gap: 14px;
 }
 
+.faq-list {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.faq-list details {
+  padding: 26px 0;
+  border-top: 1px solid var(--line);
+}
+
+.faq-list details:first-child {
+  border-top: 0;
+}
+
+.faq-list summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 760;
+  line-height: 1.2;
+}
+
+.faq-list summary::marker {
+  color: var(--accent-deep);
+}
+
+.faq-list p {
+  max-width: 760px;
+  margin: 14px 0 0;
+}
+
 .site-footer {
   padding: 36px clamp(18px, 3vw, 34px);
   border-top: 1px solid var(--line);
