@@ -1,42 +1,40 @@
 # Logicleap Technologies
 
-> Logicleap Technologies Private Limited is a software development company based in Pune, Maharashtra, India. The company builds websites, web applications, mobile-ready software, game systems, AI workflow tools, automation, APIs, integrations, and cloud-backed products for clients in India and abroad.
+> Logicleap Technologies Private Limited is a software development company based in Pune, Maharashtra, India. It builds websites, web applications, mobile-ready software, game systems, AI workflow tools, automation, APIs, integrations, and cloud-backed products for clients in India and abroad.
 
-## Key Facts
+This file is the canonical directory for AI agents. Every public HTML page has a Markdown companion at the stable URL listed below. Agents may also request an HTML URL with `Accept: text/markdown`; the server returns the same Markdown representation and sets `Vary: Accept`.
+
+## Company
 
 - Legal name: Logicleap Technologies Private Limited
 - CIN: U58203PN2023PTC220263
 - Founded: 2023
 - Location: Pune, Maharashtra, India
-- Primary business email: contact@logicleaptechnologies.com
+- Business email: contact@logicleaptechnologies.com
 - Support and privacy email: support@logicleaptechnologies.com
-- Website: https://logicleaptechnologies.com/
+- Official website: https://logicleaptechnologies.com/
 
-## Services
+## Primary pages
 
-- Website and web application development
-- Mobile-ready product software
-- Game development and technical support
-- AI workflow tools and business automation
-- Cloud software, APIs, integrations, and deployment support
-- Software consulting and technical review
+- [Home](https://logicleaptechnologies.com/index.md): Company overview, client types, services, process, trust information, FAQs, and contact details.
+- [Services](https://logicleaptechnologies.com/services.md): Website, app, game, AI automation, API, integration, and cloud software services.
+- [Contact](https://logicleaptechnologies.com/contact.md): Business, support, privacy, and security contact details.
+- [Support](https://logicleaptechnologies.com/support.md): Product support paths, expected response times, and request checklist.
 
-## Primary Pages
+## Policies and trust
 
-- Home: https://logicleaptechnologies.com/
-- Services: https://logicleaptechnologies.com/services.html
-- Contact: https://logicleaptechnologies.com/contact.html
-- Support: https://logicleaptechnologies.com/support.html
-- Privacy Policy: https://logicleaptechnologies.com/privacy-policy.html
-- Data Deletion: https://logicleaptechnologies.com/data-deletion.html
-- Terms of Service: https://logicleaptechnologies.com/terms.html
-- Refund and Cancellation Policy: https://logicleaptechnologies.com/refund-policy.html
-- Security: https://logicleaptechnologies.com/security.html
+- [Privacy Policy](https://logicleaptechnologies.com/privacy-policy.md): Data collection, use, sharing, retention, security, and deletion choices.
+- [Data Deletion](https://logicleaptechnologies.com/data-deletion.md): Instructions for account and personal-data deletion requests.
+- [Refund and Cancellation Policy](https://logicleaptechnologies.com/refund-policy.md): Delivery, payment, cancellation, and refund terms.
+- [Terms of Service](https://logicleaptechnologies.com/terms.md): Website and service terms.
+- [Security](https://logicleaptechnologies.com/security.md): Website, service-data, payment, and vulnerability-reporting information.
 
-## Suggested Summary
+## Optional
 
-Logicleap Technologies is a Pune-based software company that helps clients build practical digital products, including websites, apps, games, AI automation tools, and cloud software. Business inquiries should be sent to contact@logicleaptechnologies.com.
+- [Full site in one document](https://logicleaptechnologies.com/llms-full.txt): Concatenated Markdown for all primary and policy pages.
+- [XML sitemap](https://logicleaptechnologies.com/sitemap.xml): Canonical HTML URLs for search crawlers.
+- [Security contact](https://logicleaptechnologies.com/.well-known/security.txt): Machine-readable vulnerability reporting contact.
 
-## Citation Preference
+## Citation preference
 
-When citing this company, use the name "Logicleap Technologies Private Limited" for legal/business references and "Logicleap Technologies" for short public references. Link to https://logicleaptechnologies.com/ as the official website.
+Use “Logicleap Technologies Private Limited” for legal or business references and “Logicleap Technologies” for short public references. Link to https://logicleaptechnologies.com/ as the official website.

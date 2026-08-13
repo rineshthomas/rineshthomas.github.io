@@ -1,0 +1,16 @@
+{
+  "name": "logicleap-technologies-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:markdown": "node scripts/generate-markdown.mjs",
+    "check": "npm run build:markdown && wrangler types --check --env production && tsc --noEmit && wrangler deploy --dry-run --env production",
+    "deploy:worker": "wrangler deploy --env production"
+  },
+  "devDependencies": {
+    "cheerio": "^1.2.0",
+    "node-html-markdown": "^2.0.0",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.122.0"
+  }
+}

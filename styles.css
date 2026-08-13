@@ -859,6 +859,10 @@ tr:last-child td {
   border-color: var(--line-strong);
 }
 
+.copy-button[hidden] {
+  display: none;
+}
+
 .copy-button[data-state="success"] {
   color: #ffffff;
   background: var(--accent-deep);

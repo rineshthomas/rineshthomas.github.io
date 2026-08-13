@@ -5,3 +5,4 @@ Sitemap: https://logicleaptechnologies.com/sitemap.xml
 
 # AI-readable site summary:
 # https://logicleaptechnologies.com/llms.txt
+# https://logicleaptechnologies.com/llms-full.txt

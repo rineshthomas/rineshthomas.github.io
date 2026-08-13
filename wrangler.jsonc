@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "logicleap-ai-readable-site",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "vars": {
+    "ORIGIN_URL": "https://logicleaptechnologies.com"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    }
+  },
+  "env": {
+    "production": {
+      "name": "logicleap-ai-readable-site",
+      "workers_dev": false,
+      "routes": [
+        {
+          "pattern": "logicleaptechnologies.com/*",
+          "zone_name": "logicleaptechnologies.com"
+        }
+      ],
+      "vars": {
+        "ORIGIN_URL": "https://logicleaptechnologies.com"
+      },
+      "observability": {
+        "enabled": true,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "invocation_logs": true,
+          "persist": true
+        }
+      }
+    }
+  }
+}

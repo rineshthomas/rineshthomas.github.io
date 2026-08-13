@@ -6,6 +6,10 @@
     return;
   }
 
+  buttons.forEach((button) => {
+    button.hidden = false;
+  });
+
   function setState(button, state, text) {
     button.dataset.state = state;
     button.textContent = text;
