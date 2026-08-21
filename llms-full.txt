@@ -39,6 +39,10 @@ Practical automation that reduces repeated manual work in content, operations, s
 
 idea -> scope -> build -> launch -> support
 
+## Tune the project signal.
+
+Pick what you want to build. The console translates each choice into a different delivery profile.
+
 01 
 
 ## A software partner for practical business outcomes.

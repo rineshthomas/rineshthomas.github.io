@@ -208,6 +208,45 @@
       </div>
     </section>
 
+    <section class="section signal-playground" aria-labelledby="playground-heading">
+      <div class="section-inner signal-layout" data-playground>
+        <div class="section-title">
+          <span class="section-number" data-markdown-ignore>Play / 01</span>
+          <h2 id="playground-heading">Tune the project signal.</h2>
+          <p>Pick what you want to build. The console translates each choice into a different delivery profile.</p>
+          <div class="signal-controls" role="group" aria-label="Choose a project type" data-markdown-ignore>
+            <button type="button" data-signal-mode data-code="WEB/72" data-name="Web systems" data-progress="72" data-detail="Public sites, portals, and products tuned for speed, clarity, and discovery." aria-pressed="true">Web</button>
+            <button type="button" data-signal-mode data-code="APP/84" data-name="Apps and cloud" data-progress="84" data-detail="Connected product experiences with practical workflows, APIs, and dependable cloud foundations." aria-pressed="false">Apps</button>
+            <button type="button" data-signal-mode data-code="AI/91" data-name="AI automation" data-progress="91" data-detail="Focused AI tools that reduce repeated work while keeping people in control." aria-pressed="false">AI</button>
+            <button type="button" data-signal-mode data-code="GAME/66" data-name="Games and play" data-progress="66" data-detail="Responsive game systems, prototypes, and interactive experiences built to feel good in motion." aria-pressed="false">Games</button>
+          </div>
+        </div>
+
+        <div class="signal-console" aria-label="Interactive project signal display" data-markdown-ignore>
+          <div class="signal-console-head">
+            <span>LLT / INPUT CHANNEL</span>
+            <i aria-hidden="true"></i>
+            <strong>LIVE</strong>
+          </div>
+          <div class="signal-console-grid">
+            <div class="signal-readout">
+              <span>Selected profile</span>
+              <strong data-signal-code>WEB/72</strong>
+              <p data-signal-name>Web systems</p>
+            </div>
+            <div class="signal-ring" data-signal-ring style="--signal-progress: 72">
+              <output data-signal-value aria-label="Signal strength">72%</output>
+            </div>
+            <div class="signal-wave" aria-hidden="true">
+              <i style="--h: 32%"></i><i style="--h: 68%"></i><i style="--h: 46%"></i><i style="--h: 88%"></i><i style="--h: 58%"></i><i style="--h: 76%"></i><i style="--h: 40%"></i><i style="--h: 92%"></i><i style="--h: 64%"></i><i style="--h: 82%"></i><i style="--h: 50%"></i><i style="--h: 72%"></i>
+            </div>
+          </div>
+          <p class="signal-detail" data-signal-detail>Public sites, portals, and products tuned for speed, clarity, and discovery.</p>
+          <p class="sr-only" data-signal-status aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
     <section class="section" aria-labelledby="who-heading">
       <div class="section-inner capability-layout">
         <div class="section-title">
