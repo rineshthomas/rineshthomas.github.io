@@ -87,4 +87,30 @@
       }, 1800);
     });
   });
+
+  const playground = document.querySelector("[data-playground]");
+
+  if (playground) {
+    const modes = playground.querySelectorAll("[data-signal-mode]");
+    const code = playground.querySelector("[data-signal-code]");
+    const name = playground.querySelector("[data-signal-name]");
+    const detail = playground.querySelector("[data-signal-detail]");
+    const ring = playground.querySelector("[data-signal-ring]");
+    const value = playground.querySelector("[data-signal-value]");
+    const status = playground.querySelector("[data-signal-status]") || detail;
+
+    if (status) status.setAttribute("aria-live", "polite");
+
+    modes.forEach((button) => {
+      button.addEventListener("click", () => {
+        modes.forEach((mode) => mode.setAttribute("aria-pressed", String(mode === button)));
+        if (code) code.textContent = button.dataset.code;
+        if (name) name.textContent = button.dataset.name;
+        if (detail) detail.textContent = button.dataset.detail;
+        if (ring) ring.style.setProperty("--signal-progress", button.dataset.progress);
+        if (value) value.textContent = `${button.dataset.progress}%`;
+        if (status !== detail) status.textContent = `${button.dataset.name}, ${button.dataset.progress} percent: ${button.dataset.detail}`;
+      });
+    });
+  }
 }());
