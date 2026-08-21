@@ -11,7 +11,6 @@ function run({ saved = null, prefersDark = false, withPlayground = false } = {})
     setAttribute(name, value) { this[name] = value; },
     addEventListener(name, listener) { listeners[name] = listener; },
   };
-  const nav = { append(element) { this.child = element; } };
   const meta = {};
   const root = { dataset: {}, style: {} };
   const storage = {
@@ -27,19 +26,46 @@ function run({ saved = null, prefersDark = false, withPlayground = false } = {})
     const first = output();
     const second = {
       ...output(),
-      dataset: { name: "Pulse", code: "02", progress: "84", detail: "A responsive signal." },
+      dataset: {
+        action: "Start an app project",
+        name: "Apps and cloud",
+        code: "APP / PRODUCT",
+        milestone: "Core workflow prototype",
+        deliverables: "Screens and APIs",
+        platforms: "Web, iOS, and Android",
+        send: "User roles and target devices",
+      },
       addEventListener(name, listener) { this.click = listener; },
     };
-    first.dataset = { name: "Flow", code: "01", progress: "62", detail: "A steady signal." };
+    first.dataset = {
+      action: "Start a web project",
+      name: "Web systems",
+      code: "WEB / LAUNCH",
+      milestone: "Information architecture",
+      deliverables: "Responsive frontend",
+      platforms: "Web hosting and CMS",
+      send: "Goals and current content",
+    };
     first.addEventListener = function (name, listener) { this.click = listener; };
-    const outputs = { code: output(), name: output(), detail: output(), ring: output(), value: output(), status: output() };
+    const outputs = {
+      code: output(),
+      name: output(),
+      milestone: output(),
+      deliverables: output(),
+      platforms: output(),
+      send: output(),
+      status: output(),
+      cta: output(),
+    };
     const selectors = {
       "[data-signal-code]": outputs.code,
       "[data-signal-name]": outputs.name,
-      "[data-signal-detail]": outputs.detail,
-      "[data-signal-ring]": outputs.ring,
-      "[data-signal-value]": outputs.value,
+      "[data-signal-milestone]": outputs.milestone,
+      "[data-signal-deliverables]": outputs.deliverables,
+      "[data-signal-platforms]": outputs.platforms,
+      "[data-signal-send]": outputs.send,
       "[data-signal-status]": outputs.status,
+      "[data-signal-cta]": outputs.cta,
     };
     return {
       first, second, outputs,
@@ -53,10 +79,9 @@ function run({ saved = null, prefersDark = false, withPlayground = false } = {})
   vm.runInNewContext(source, {
     document: {
       documentElement: root,
-      createElement: () => toggle,
       querySelector(selector) {
         if (selector === 'meta[name="theme-color"]') return meta;
-        if (selector === ".site-header .nav-links") return nav;
+        if (selector === "[data-theme-toggle]") return toggle;
         if (selector === "[data-playground]") return signal?.root || null;
         return null;
       },
@@ -73,12 +98,11 @@ function run({ saved = null, prefersDark = false, withPlayground = false } = {})
     navigator: {},
   });
 
-  return { listeners, meta, nav, root, signal, storage, toggle };
+  return { listeners, meta, root, signal, storage, toggle };
 }
 
 const system = run({ prefersDark: true });
 assert.equal(system.root.dataset.theme, "dark");
-assert.equal(system.nav.child, system.toggle);
 assert.equal(system.toggle["aria-label"], "Switch to light mode");
 assert.equal(system.meta.content, "#090909");
 
@@ -96,12 +120,34 @@ const interactive = run({ withPlayground: true });
 interactive.signal.second.click();
 assert.equal(interactive.signal.first["aria-pressed"], "false");
 assert.equal(interactive.signal.second["aria-pressed"], "true");
-assert.equal(interactive.signal.outputs.code.textContent, "02");
-assert.equal(interactive.signal.outputs.name.textContent, "Pulse");
-assert.equal(interactive.signal.outputs.detail.textContent, "A responsive signal.");
-assert.equal(interactive.signal.outputs.ring.style["--signal-progress"], "84");
-assert.equal(interactive.signal.outputs.value.textContent, "84%");
+assert.equal(interactive.signal.outputs.code.textContent, "APP / PRODUCT");
+assert.equal(interactive.signal.outputs.name.textContent, "Apps and cloud");
+assert.equal(interactive.signal.outputs.milestone.textContent, "Core workflow prototype");
+assert.equal(interactive.signal.outputs.deliverables.textContent, "Screens and APIs");
+assert.equal(interactive.signal.outputs.platforms.textContent, "Web, iOS, and Android");
+assert.equal(interactive.signal.outputs.send.textContent, "User roles and target devices");
+assert.match(interactive.signal.outputs.cta.href, /^mailto:contact@logicleaptechnologies\.com\?subject=Apps%20and%20cloud%20project%20inquiry&body=/);
+assert.match(interactive.signal.outputs.cta.href, /Platforms%20or%20integrations%3A/);
+assert.equal(interactive.signal.outputs.cta.textContent, "Start an app project");
 assert.equal(interactive.signal.outputs.status["aria-live"], "polite");
-assert.equal(interactive.signal.outputs.status.textContent, "Pulse, 84 percent: A responsive signal.");
+assert.equal(interactive.signal.outputs.status.textContent, "Apps and cloud project profile selected.");
+
+const assetVersions = new Set();
+
+for (const file of fs.readdirSync(new URL("../", import.meta.url)).filter((name) => name.endsWith(".html"))) {
+  const html = fs.readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
+  const themeInit = html.indexOf('src="theme-init.js?v=');
+  const stylesheet = html.indexOf('href="styles.css?v=');
+  const styleVersion = html.match(/href="styles\.css\?v=(\d+)"/)?.[1];
+  const scriptVersion = html.match(/src="site\.js\?v=(\d+)"/)?.[1];
+
+  assert.ok(themeInit >= 0 && themeInit < stylesheet, `${file} loads theme-init before its stylesheet`);
+  assert.ok(styleVersion && scriptVersion, `${file} uses versioned site assets`);
+  assert.equal(styleVersion, scriptVersion, `${file} uses one asset version`);
+  assert.match(html, /<button[^>]+data-theme-toggle/, `${file} renders its theme button in HTML`);
+  assert.doesNotMatch(html, /href="(?:\.\/)?index\.html"/, `${file} links home with /`);
+  assetVersions.add(styleVersion);
+}
+assert.equal(assetVersions.size, 1, "all HTML pages use the same asset version");
 
 console.log("Theme and interaction checks passed.");
