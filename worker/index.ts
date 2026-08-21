@@ -84,6 +84,27 @@ function markdownUrl(requestUrl: string, markdownPath: string): string {
   return url.toString();
 }
 
+function canonicalUrl(requestUrl: string, markdownPath: string): string {
+  const url = new URL(requestUrl);
+  url.pathname = markdownPath === "/index.md" ? "/" : markdownPath.replace(/\.md$/, ".html");
+  url.search = "";
+  return url.toString();
+}
+
+function withSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  headers.set("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'");
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
 function originRequest(request: Request, originBase: string, path?: string): Request {
   const incomingUrl = new URL(request.url);
   const originUrl = new URL(originBase);
@@ -94,7 +115,6 @@ function originRequest(request: Request, originBase: string, path?: string): Req
 }
 
 async function fetchMarkdown(request: Request, env: Env, markdownPath: string): Promise<Response> {
-  const publicUrl = markdownUrl(request.url, markdownPath);
   const headers = new Headers(request.headers);
   headers.set("Accept", "text/markdown, text/plain;q=0.9, */*;q=0.1");
 
@@ -105,7 +125,8 @@ async function fetchMarkdown(request: Request, env: Env, markdownPath: string): 
   const responseHeaders = new Headers(originResponse.headers);
   responseHeaders.set("Content-Type", "text/markdown; charset=utf-8");
   responseHeaders.set("Content-Location", markdownPath);
-  responseHeaders.set("Link", `<${publicUrl}>; rel="canonical"; type="text/markdown"`);
+  responseHeaders.set("Link", `<${canonicalUrl(request.url, markdownPath)}>; rel="canonical"`);
+  responseHeaders.set("X-Robots-Tag", "noindex, follow");
   appendVary(responseHeaders, "Accept");
 
   return new Response(request.method === "HEAD" ? null : originResponse.body, {
@@ -132,16 +153,12 @@ async function fetchHtml(request: Request, env: Env, markdownPath: string | unde
 }
 
 function logRequest(request: Request, response: Response, representation: Representation): void {
-  const cf = request.cf;
   console.log(JSON.stringify({
     event: "http_request",
     method: request.method,
     path: new URL(request.url).pathname,
     status: response.status,
-    representation,
-    accept: request.headers.get("accept"),
-    userAgent: request.headers.get("user-agent"),
-    country: cf?.country ?? null
+    representation
   }));
 }
 
@@ -149,13 +166,26 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const url = new URL(request.url);
-      const markdownPath = MARKDOWN_PATHS.get(url.pathname);
 
       if (request.method !== "GET" && request.method !== "HEAD") {
-        const response = await fetch(originRequest(request, env.ORIGIN_URL));
+        const response = withSecurityHeaders(new Response("Method Not Allowed\n", {
+          status: 405,
+          headers: {
+            "Allow": "GET, HEAD",
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        }));
         logRequest(request, response, "other");
         return response;
       }
+
+      if (url.pathname === "/index.html") {
+        const response = withSecurityHeaders(Response.redirect(`${url.origin}/`, 301));
+        logRequest(request, response, "html");
+        return response;
+      }
+
+      const markdownPath = MARKDOWN_PATHS.get(url.pathname);
 
       let response: Response;
       let representation: Representation;
@@ -166,6 +196,7 @@ export default {
         response = await fetchHtml(request, env, markdownPath);
         representation = markdownPath ? "html" : "other";
       }
+      response = withSecurityHeaders(response);
       logRequest(request, response, representation);
       return response;
     } catch (error) {
@@ -175,13 +206,13 @@ export default {
         path: new URL(request.url).pathname,
         message: error instanceof Error ? error.message : String(error)
       }));
-      return new Response(request.method === "HEAD" ? null : "The site origin is temporarily unavailable.\n", {
+      return withSecurityHeaders(new Response(request.method === "HEAD" ? null : "The site origin is temporarily unavailable.\n", {
         status: 502,
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
           "Cache-Control": "no-store"
         }
-      });
+      }));
     }
   }
 } satisfies ExportedHandler<Env>;
