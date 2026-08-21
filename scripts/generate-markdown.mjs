@@ -42,7 +42,7 @@ for (const htmlFile of pages) {
   const description = $("meta[name='description']").attr("content")?.trim();
   const main = $("main").first().clone();
 
-  main.find("script, style, svg, .stripe, .eyebrow, [data-copy], [data-copy-status]").remove();
+  main.find("script, style, svg, .stripe, .eyebrow, [data-copy], [data-copy-status], [data-markdown-ignore]").remove();
   main.find("img").each((_, element) => {
     if (!$(element).attr("alt")?.trim()) $(element).remove();
   });
