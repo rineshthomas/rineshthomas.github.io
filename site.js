@@ -12,23 +12,20 @@
 
   let theme = savedTheme === "dark" || savedTheme === "light"
     ? savedTheme
-    : systemTheme.matches ? "dark" : "light";
-
-  const nav = document.querySelector(".site-header .nav-links")
-    || document.querySelector(".site-header .nav");
-  const toggle = document.createElement("button");
-
-  toggle.type = "button";
-  toggle.className = "theme-toggle";
-  toggle.dataset.themeToggle = "";
+    : root.dataset.theme === "dark" || root.dataset.theme === "light"
+      ? root.dataset.theme
+      : systemTheme.matches ? "dark" : "light";
+  const toggle = document.querySelector("[data-theme-toggle]");
 
   function applyTheme(nextTheme) {
     theme = nextTheme;
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
-    toggle.setAttribute("aria-pressed", String(theme === "dark"));
-    toggle.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
-    toggle.textContent = theme === "dark" ? "Light" : "Dark";
+    if (toggle) {
+      toggle.setAttribute("aria-pressed", String(theme === "dark"));
+      toggle.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
+      toggle.textContent = theme === "dark" ? "Light" : "Dark";
+    }
 
     if (themeColor) {
       themeColor.content = theme === "dark" ? "#090909" : "#f5f2e9";
@@ -37,20 +34,18 @@
 
   applyTheme(theme);
 
-  if (nav) {
-    nav.append(toggle);
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      applyTheme(theme === "dark" ? "light" : "dark");
+
+      try {
+        localStorage.setItem("theme", theme);
+        savedTheme = theme;
+      } catch (error) {
+        // The selected theme still applies when storage is unavailable.
+      }
+    });
   }
-
-  toggle.addEventListener("click", () => {
-    applyTheme(theme === "dark" ? "light" : "dark");
-
-    try {
-      localStorage.setItem("theme", theme);
-      savedTheme = theme;
-    } catch (error) {
-      // The selected theme still applies when storage is unavailable.
-    }
-  });
 
   systemTheme.addEventListener("change", (event) => {
     if (savedTheme !== "dark" && savedTheme !== "light") {
@@ -94,10 +89,10 @@
     const modes = playground.querySelectorAll("[data-signal-mode]");
     const code = playground.querySelector("[data-signal-code]");
     const name = playground.querySelector("[data-signal-name]");
-    const detail = playground.querySelector("[data-signal-detail]");
-    const ring = playground.querySelector("[data-signal-ring]");
-    const value = playground.querySelector("[data-signal-value]");
-    const status = playground.querySelector("[data-signal-status]") || detail;
+    const fields = ["milestone", "deliverables", "platforms", "send"];
+    const status = playground.querySelector("[data-signal-status]");
+    const cta = playground.querySelector("[data-signal-cta]");
+    const inquiryBody = "Project goal:\n\nCurrent state:\n\nPlatforms or integrations:\n\nDeadline or target date:\n\nIndicative budget:\n";
 
     if (status) status.setAttribute("aria-live", "polite");
 
@@ -106,10 +101,15 @@
         modes.forEach((mode) => mode.setAttribute("aria-pressed", String(mode === button)));
         if (code) code.textContent = button.dataset.code;
         if (name) name.textContent = button.dataset.name;
-        if (detail) detail.textContent = button.dataset.detail;
-        if (ring) ring.style.setProperty("--signal-progress", button.dataset.progress);
-        if (value) value.textContent = `${button.dataset.progress}%`;
-        if (status !== detail) status.textContent = `${button.dataset.name}, ${button.dataset.progress} percent: ${button.dataset.detail}`;
+        fields.forEach((field) => {
+          const output = playground.querySelector(`[data-signal-${field}]`);
+          if (output) output.textContent = button.dataset[field];
+        });
+        if (cta) {
+          cta.href = `mailto:contact@logicleaptechnologies.com?subject=${encodeURIComponent(`${button.dataset.name} project inquiry`)}&body=${encodeURIComponent(inquiryBody)}`;
+          cta.textContent = button.dataset.action;
+        }
+        if (status) status.textContent = `${button.dataset.name} project profile selected.`;
       });
     });
   }

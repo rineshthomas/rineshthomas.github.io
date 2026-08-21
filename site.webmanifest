@@ -1,15 +1,22 @@
 {
   "name": "Logicleap Technologies",
   "short_name": "Logicleap",
-  "start_url": "index.html",
-  "display": "browser",
-  "background_color": "#f8faf9",
-  "theme_color": "#17201e",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080908",
+  "theme_color": "#080908",
   "icons": [
     {
-      "src": "assets/logo.png",
-      "sizes": "520x520",
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
       "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

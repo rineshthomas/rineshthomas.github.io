@@ -51,13 +51,15 @@ npm run check
 - `llms-full.txt` - generated full-site Markdown document
 - `*.md` - generated Markdown companion for each HTML page
 - `scripts/generate-markdown.mjs` - Markdown generator
+- `theme-init.js` - synchronous saved-theme bootstrap used before CSS loads
 - `worker/index.ts` - negotiation, alternate response headers, and structured request logs
 - `wrangler.jsonc` - Cloudflare Worker route and observability configuration
 - `.well-known/security.txt` - security contact
 - `.nojekyll` - required so GitHub Pages serves dot-prefixed folders such as `.well-known`
 - `CNAME` - custom domain configuration for `logicleaptechnologies.com`
-- `assets/logo.png` - logo/favicon/hero asset
-- `assets/og-image.png` - social preview image
+- `assets/logo.png` - source logo asset
+- `assets/favicon-*.png` and `assets/icon-*.png` - optimized browser and app icons
+- `assets/og-image.jpg` - 1200×630 social preview image
 
 ## Deployment
 
