@@ -74,3 +74,22 @@ Deployment path:
 5. Run `npm run deploy:worker` when `worker/index.ts` or `wrangler.jsonc` changes.
 
 Do not remove `CNAME` or `.nojekyll`.
+
+## Certificate renewal route
+
+Preserve this Cloudflare zone-level route, with no Worker assigned:
+
+- Pattern: `http://logicleaptechnologies.com/.well-known/acme-challenge/*`
+- Worker: None
+
+This more specific route lets GitHub Pages answer Let's Encrypt HTTP-01 certificate challenges directly. The site's Worker otherwise sends requests to the HTTPS origin, including incoming HTTP challenges. If the origin certificate is invalid, Full (strict) rejects that connection and can block the challenge needed to renew the certificate.
+
+Manage this exception separately from the Worker's `env.production.routes` in `wrangler.jsonc`. Do not add the challenge pattern to that array: ordinary Wrangler route entries assign the pattern to the Worker. Keep the no-Worker exception when changing Cloudflare routing, and verify it after future Worker deployments.
+
+Check the route with a nonexistent token:
+
+```sh
+curl --max-time 15 -sS -D - -o /dev/null http://logicleaptechnologies.com/.well-known/acme-challenge/route-check
+```
+
+The request should reach GitHub Pages and return HTTP 404 with GitHub response headers, rather than Cloudflare 526. A nonexistent token's 404 confirms routing only; verify successful certificate issuance separately in GitHub Pages settings. Keep ordinary HTTPS traffic on Full (strict), and confirm Enforce HTTPS is enabled in GitHub Pages after certificate provisioning completes.
