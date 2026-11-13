@@ -11,7 +11,7 @@
   const sections = [...document.querySelectorAll('[data-zone]')];
   const interactive = 'a, button, input, select, textarea, label, summary, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="textbox"]';
   const editing = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
-  const layoutElements = 'h1, h2, h3, main p, main strong, main label, main input, main textarea, main select, main a, main button, main summary, .site-header, .site-footer, .world-note';
+  const layoutElements = 'h1, h2, h3, main p, main strong, main label, main input, main textarea, main select, main a, main button, main summary, .site-header, .site-footer';
   const tau = Math.PI * 2;
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -633,7 +633,6 @@
       collected: scenes.map(s => s.targets.filter(t => t.taken).length)
     })
   })});
-  element('helpButton').hidden = element('footerHelp').hidden = false;
   document.body.dataset.zone = '0';
   updateStatus();
   resize();

@@ -106,7 +106,7 @@ function run({ saved = null, prefersDark = false, withPlayground = false } = {})
 const system = run({ prefersDark: true });
 assert.equal(system.root.dataset.theme, "dark");
 assert.equal(system.toggle["aria-label"], "Switch to light mode");
-assert.equal(system.meta.content, "#090909");
+assert.equal(system.meta.content, "#071322");
 
 system.listeners.click();
 assert.equal(system.root.dataset.theme, "light");
@@ -115,8 +115,7 @@ assert.equal(system.toggle["aria-pressed"], "false");
 
 const saved = run({ saved: "light", prefersDark: true });
 assert.equal(saved.root.dataset.theme, "light");
-saved.listeners.system({ matches: true });
-assert.equal(saved.root.dataset.theme, "light");
+assert.equal(run().root.dataset.theme, "dark");
 
 const interactive = run({ withPlayground: true });
 interactive.signal.second.click();
@@ -157,16 +156,21 @@ for (const file of fs.readdirSync(new URL("../", import.meta.url)).filter((name)
     assert.equal($("main [data-zone]").length, 5);
     continue;
   }
-  const themeInit = html.indexOf('src="theme-init.js?v=');
-  const stylesheet = html.indexOf('href="styles.css?v=');
-  const styleVersion = html.match(/href="styles\.css\?v=(\d+)"/)?.[1];
-  const scriptVersion = html.match(/src="site\.js\?v=(\d+)"/)?.[1];
+  const themeInit = html.indexOf('src="/theme-init.js?v=');
+  const stylesheet = html.indexOf('href="/styles.css?v=');
+  const styleVersion = html.match(/href="\/styles\.css\?v=(\d+)"/)?.[1];
+  const scriptVersion = html.match(/src="\/site\.js\?v=(\d+)"/)?.[1];
 
   assert.ok(themeInit >= 0 && themeInit < stylesheet, `${file} loads theme-init before its stylesheet`);
   assert.ok(styleVersion && scriptVersion, `${file} uses versioned site assets`);
   assert.equal(styleVersion, scriptVersion, `${file} uses one asset version`);
   assert.match(html, /<button[^>]+data-theme-toggle/, `${file} renders its theme button in HTML`);
   assert.doesNotMatch(html, /href="(?:\.\/)?index\.html"/, `${file} links home with /`);
+  const $ = load(html);
+  assert.equal($("canvas, [data-zone], [data-flight-help], script[src*='/world.js']").length, 0, `${file} keeps gameplay on the homepage`);
+  const menu = $(".nav-menu-toggle");
+  assert.equal(menu.length, 1);
+  assert.equal($("#" + menu.attr("aria-controls")).length, 1);
   assetVersions.add(styleVersion);
 }
 assert.equal(assetVersions.size, 1, "all themed pages use the same asset version");

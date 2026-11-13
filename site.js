@@ -1,6 +1,5 @@
 (function () {
   const root = document.documentElement;
-  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
   const themeColor = document.querySelector('meta[name="theme-color"]');
   let savedTheme;
 
@@ -14,7 +13,7 @@
     ? savedTheme
     : root.dataset.theme === "dark" || root.dataset.theme === "light"
       ? root.dataset.theme
-      : systemTheme.matches ? "dark" : "light";
+      : "dark";
   const toggle = document.querySelector("[data-theme-toggle]");
 
   function applyTheme(nextTheme) {
@@ -28,13 +27,14 @@
     }
 
     if (themeColor) {
-      themeColor.content = theme === "dark" ? "#090909" : "#f5f2e9";
+      themeColor.content = theme === "dark" ? "#071322" : "#f1f6f8";
     }
   }
 
   applyTheme(theme);
 
   if (toggle) {
+    toggle.hidden = false;
     toggle.addEventListener("click", () => {
       applyTheme(theme === "dark" ? "light" : "dark");
 
@@ -47,11 +47,35 @@
     });
   }
 
-  systemTheme.addEventListener("change", (event) => {
-    if (savedTheme !== "dark" && savedTheme !== "light") {
-      applyTheme(event.matches ? "dark" : "light");
+  const menuButton = document.querySelector(".nav-menu-toggle");
+  if (menuButton) {
+    const nav = menuButton.closest(".nav");
+    const links = document.getElementById(menuButton.getAttribute("aria-controls"));
+    const compact = window.matchMedia("(max-width: 720px)");
+
+    function setMenu(open) {
+      menuButton.setAttribute("aria-expanded", String(open));
+      menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      menuButton.querySelector("path").setAttribute("d", open ? "M6 6l12 12M18 6 6 18" : "M4 7h16M4 12h16M4 17h16");
     }
-  });
+
+    menuButton.hidden = false;
+    menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+    links.addEventListener("click", () => setMenu(false));
+    nav.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
+        setMenu(false);
+        menuButton.focus();
+      }
+    });
+    nav.addEventListener("focusout", (event) => {
+      if (!nav.contains(event.relatedTarget)) setMenu(false);
+    });
+    document.addEventListener("click", (event) => {
+      if (!nav.contains(event.target) && menuButton.getAttribute("aria-expanded") === "true") setMenu(false);
+    });
+    compact.addEventListener("change", () => setMenu(false));
+  }
 
   const buttons = document.querySelectorAll("[data-copy]");
   const status = document.querySelector("[data-copy-status]");
