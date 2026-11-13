@@ -1,0 +1,24 @@
+@font-face {
+  font-family: Rubik;
+  src: url('../assets/rubik-regular.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Rubik;
+  src: url('../assets/rubik-bold.woff') format('woff');
+  font-weight: 700;
+  font-display: swap;
+}
+
+.world-backdrop .landscape {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.world-backdrop .landscape img { opacity: 0; transition: opacity .28s ease-out; }
+.world-backdrop .landscape.decoded img { opacity: 1; }
+.world-backdrop .world-tint { z-index: 5; }
+@media (prefers-reduced-motion: reduce) {
+  .world-backdrop .landscape img { transition: none; }
+}

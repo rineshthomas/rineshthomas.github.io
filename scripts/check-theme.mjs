@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { createHash } from "node:crypto";
+import { load } from "cheerio";
 
 const source = fs.readFileSync(new URL("../site.js", import.meta.url), "utf8");
 
@@ -136,6 +138,25 @@ const assetVersions = new Set();
 
 for (const file of fs.readdirSync(new URL("../", import.meta.url)).filter((name) => name.endsWith(".html"))) {
   const html = fs.readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
+  if (file === "index.html") {
+    const $ = load(html);
+    const assets = new Set();
+    for (const element of $("[src], [srcset], [href]")) {
+      const ref = element.attribs.src ?? element.attribs.srcset ?? element.attribs.href;
+      if (!/^(src|assets)\//.test(ref)) continue;
+      const url = new URL(ref, "https://logicleaptechnologies.com/");
+      const contents = fs.readFileSync(new URL(".." + url.pathname, import.meta.url));
+      const digest = createHash("sha256").update(contents).digest("hex").slice(0, 12);
+      assert.equal(url.searchParams.get("v"), digest, `${ref} matches its deployed content`);
+      assets.add(url.pathname);
+    }
+    for (const entry of ["reading-space.js", "world.js", "scenery.js", "site.js"]) {
+      assert.ok(assets.has(`/src/${entry}`), `the homepage loads ${entry}`);
+    }
+    assert.equal($("canvas#world").length, 1);
+    assert.equal($("main [data-zone]").length, 5);
+    continue;
+  }
   const themeInit = html.indexOf('src="theme-init.js?v=');
   const stylesheet = html.indexOf('href="styles.css?v=');
   const styleVersion = html.match(/href="styles\.css\?v=(\d+)"/)?.[1];
@@ -148,6 +169,6 @@ for (const file of fs.readdirSync(new URL("../", import.meta.url)).filter((name)
   assert.doesNotMatch(html, /href="(?:\.\/)?index\.html"/, `${file} links home with /`);
   assetVersions.add(styleVersion);
 }
-assert.equal(assetVersions.size, 1, "all HTML pages use the same asset version");
+assert.equal(assetVersions.size, 1, "all themed pages use the same asset version");
 
 console.log("Theme and interaction checks passed.");

@@ -38,7 +38,9 @@ for (const htmlFile of pages) {
   const canonical = $("link[rel='canonical']").attr("href")
     ?? new URL(htmlFile === "index.html" ? "/" : `/${htmlFile}`, siteOrigin).toString();
   const markdownPath = `/${basename(htmlFile, ".html")}.md`;
-  const title = $("main h1").first().text().trim() || $("title").text().split("|")[0].trim();
+  const heading = $("main h1").first().clone();
+  heading.find("br").replaceWith(" ");
+  const title = heading.text().replace(/\s+/g, " ").trim() || $("title").text().split("|")[0].trim();
   const description = $("meta[name='description']").attr("content")?.trim();
   const main = $("main").first().clone();
 
@@ -76,6 +78,7 @@ for (const htmlFile of pages) {
     if (!$(element).attr("alt")?.trim()) $(element).remove();
   });
   main.find("h1").first().remove();
+  main.find("[hidden]").remove();
   main.find("a[href]").each((_, element) => {
     const link = $(element);
     link.attr("href", absoluteUrl(link.attr("href"), canonical));

@@ -16,7 +16,7 @@ This file is the canonical directory for AI agents. Every public HTML page has a
 
 ## Primary pages
 
-- [Home](https://logicleaptechnologies.com/index.md): Company overview, client types, services, process, trust information, FAQs, and contact details.
+- [Home](https://logicleaptechnologies.com/index.md): Playable studio, game engineering, applied AI, connected software, delivery process, and project inquiries.
 - [Services](https://logicleaptechnologies.com/services.md): Website, app, game, AI automation, API, integration, and cloud software services.
 - [Contact](https://logicleaptechnologies.com/contact.md): Business, support, privacy, and security contact details.
 - [Support](https://logicleaptechnologies.com/support.md): Product support paths, expected response times, and request checklist.
