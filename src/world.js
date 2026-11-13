@@ -84,14 +84,6 @@
   const nextRelay = zone => scenes[zone].targets.find(t => t.kind === 'relay' && !t.taken);
   const gateOpen = zone => scenes[zone].targets.every(t => t.kind !== 'core' || t.taken);
 
-  function updateStatus() {
-    const chapter = chapters[state.zone];
-    element('zoneName').textContent = chapter.name;
-    element('worldStatus').textContent = scene().complete ? 'Flight complete. Scroll to explore.' : chapter.goal;
-    element('score').textContent = String(state.score);
-    element('pauseButton').textContent = state.paused ? 'Resume flight' : 'Pause flight';
-    element('pauseButton').setAttribute('aria-pressed', String(state.paused));
-  }
   function activate() {
     if (!canFly()) return false;
     playing = true;
@@ -118,7 +110,6 @@
     state.paused = paused;
     savePreference('ll-motion', paused ? 'paused' : 'on');
     clearInput();
-    updateStatus();
     request();
   }
 
@@ -272,7 +263,6 @@
     if (zone !== state.zone) {
       state.zone = zone;
       document.body.dataset.zone = String(zone);
-      updateStatus();
       document.dispatchEvent(new CustomEvent('worldzonechange', {detail: {zone, name: chapters[zone].name}}));
     }
     document.dispatchEvent(new CustomEvent('worldjourney', {detail: {position: state.position}}));
@@ -313,7 +303,6 @@
       scenes[target.zone].complete = true;
       element('gameAnnouncer').textContent = chapters[target.zone].name + ' complete. Flight score ' + state.score + '.';
     }
-    updateStatus();
   }
   function releaseCargo(target) {
     target.taken = true;
@@ -555,7 +544,7 @@
   // Pointer movement is independent of DOM hit-testing, including over links
   // and form controls. Clicks and keyboard input still belong to native widgets.
   document.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch' || event.buttons || event.target.closest('#helpPanel, #mobileNav')) return;
+    if (event.pointerType === 'touch' || event.buttons || event.target.closest('#mobileNav')) return;
     steerTo(event.clientX, event.clientY);
   }, {passive: true});
   let lastPointerType = '';
@@ -563,6 +552,8 @@
   document.addEventListener('click', event => {
     if (!event.detail || event.defaultPrevented || event.target.closest(interactive) || getSelection()?.toString()) return;
     const touch = (event.pointerType || lastPointerType) === 'touch' || event.sourceCapabilities?.firesTouchEvents;
+    // A returning touch player can resume a saved pause by tapping the playfield.
+    if (touch && state.paused && !state.suspended) pause(false);
     steerTo(event.clientX, event.clientY, touch);
     if (!touch) pulse();
   });
@@ -597,25 +588,6 @@
   document.addEventListener('worldreadingspacechange', checkLayout);
   document.addEventListener('worldlock', event => { uiOpen = event.detail; syncSuspension(); });
   reducedMotion.addEventListener('change', () => { clearInput(); request(); });
-  element('pauseButton').addEventListener('click', () => pause(!state.paused));
-  element('qualitySelect').value = state.quality;
-  element('qualitySelect').addEventListener('change', event => {
-    state.quality = event.target.value;
-    savePreference('ll-quality', state.quality);
-    resize();
-  });
-  element('resetButton').addEventListener('click', () => {
-    scenes = makeScenes();
-    journeyReady = false;
-    encounters = []; encounterTargets = [];
-    state.score = state.pulses = state.bumps = 0;
-    lastPulse = -Infinity; shield = 0;
-    rings = []; sparks = []; labels = [];
-    clearInput();
-    layoutDirty = placeDirty = true;
-    element('gameAnnouncer').textContent = 'Flight progress reset.';
-    updateStatus(); request();
-  });
   const observer = new ResizeObserver(checkLayout);
   sections.forEach(section => observer.observe(section));
   atlas.addEventListener('load', request);
@@ -634,6 +606,5 @@
     })
   })});
   document.body.dataset.zone = '0';
-  updateStatus();
   resize();
 })();

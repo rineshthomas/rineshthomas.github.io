@@ -3,7 +3,7 @@
 
   const main = document.querySelector('main');
   const footer = document.querySelector('.site-footer');
-  const fixedChrome = [...document.querySelectorAll('.site-header, #mobileNav, #helpPanel, .skip')];
+  const fixedChrome = [...document.querySelectorAll('.site-header, #mobileNav, .skip')];
   const control = 'a, button, input, textarea, select, summary, [contenteditable="true"]';
   const blocked = `${control}, [hidden], .sr-only, script, style, template, svg`;
   const range = document.createRange();
@@ -67,7 +67,7 @@
       if (box.bottom <= y || box.top >= y + innerHeight) continue;
       include(padded(box, 0, -x, -y));
     }
-    // Sticky navigation and the floating guide don't share the document offset.
+    // Sticky navigation and the skip link don't share the document offset.
     for (const item of fixedChrome) {
       const box = item.getBoundingClientRect();
       if (box.width && box.height) include(padded(box, 5));

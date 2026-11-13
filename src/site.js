@@ -1,30 +1,29 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id);
-  const menu=$('mobileNav'), menuToggle=$('menuToggle'), help=$('helpPanel');
-  const helpButtons = [...document.querySelectorAll('[data-flight-help]')];
-  if (window.logicWorld) helpButtons.forEach(button => { button.hidden = false; });
-  let helpTrigger;
-  const signalLayout=()=>document.dispatchEvent(new Event('worldlayoutchange'));
-  const signalLock=()=>document.dispatchEvent(new CustomEvent('worldlock',{detail:!menu.hidden||!help.hidden}));
-  function setMenu(open){menu.hidden=!open;menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');menuToggle.querySelector('use').setAttribute('href',open?'#i-close':'#i-menu');signalLock();signalLayout();}
-  function setHelp(open, restore = false) {
-    help.hidden = !open;
-    helpButtons.forEach(button => button.setAttribute('aria-expanded', String(open)));
-    signalLock();
-    if (open) $('closeHelp').focus({preventScroll: true});
-    else if (restore) helpTrigger?.focus({preventScroll: true});
+  const menu = $('mobileNav');
+  const menuToggle = $('menuToggle');
+  const signalLayout = () => document.dispatchEvent(new Event('worldlayoutchange'));
+
+  function setMenu(open) {
+    menu.hidden = !open;
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+    menuToggle.querySelector('use').setAttribute('href', open ? '#i-close' : '#i-menu');
+    document.dispatchEvent(new CustomEvent('worldlock', {detail: open}));
+    signalLayout();
   }
-  menuToggle.addEventListener('click',()=>{if(!menu.hidden)setMenu(false);else{setHelp(false);setMenu(true);}});
-  helpButtons.forEach(button => button.addEventListener('click', () => {
-    helpTrigger = menu.contains(button) ? menuToggle : button;
-    setMenu(false);
-    setHelp(help.hidden);
-  }));
-  $('closeHelp').addEventListener('click',()=>setHelp(false,true));
-  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
-  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!help.hidden){setHelp(false,true);e.stopImmediatePropagation();}else if(!menu.hidden){setMenu(false);menuToggle.focus({preventScroll:true});e.stopImmediatePropagation();}} , true);
-  document.addEventListener('click',e=>{if(!help.hidden&&!help.contains(e.target)&&!helpButtons.some(button=>button.contains(e.target))){setHelp(false);}if(!menu.hidden&&!menu.contains(e.target)&&!menuToggle.contains(e.target)){setMenu(false);}});
+  menuToggle.addEventListener('click', () => setMenu(menu.hidden));
+  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !menu.hidden) {
+      setMenu(false);
+      menuToggle.focus({preventScroll: true});
+    }
+  });
+  document.addEventListener('click', event => {
+    if (!menu.hidden && !menu.contains(event.target) && !menuToggle.contains(event.target)) setMenu(false);
+  });
   addEventListener('resize',()=>{if(innerWidth>850&&!menu.hidden)setMenu(false);},{passive:true});
   const zoneIds=['home','capabilities','ai','process','contact'];
   document.addEventListener('worldzonechange',e=>document.querySelectorAll('.desktop-nav a,.mobile-nav a').forEach(a=>{if(a.hash==='#'+zoneIds[e.detail.zone])a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');}));
