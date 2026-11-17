@@ -1,6 +1,6 @@
 # Worlds worth playing. Ideas worth building.
 
-> LogicLeap Technologies builds games, AI tools and connected software. Explore our capabilities in a world you can play, then tell us what you want to build.
+> LogicLeap Technologies builds games, AI tools and connected software. Explore our capabilities and tell us what you want to build.
 
 - Canonical HTML: https://logicleaptechnologies.com/
 - Markdown: https://logicleaptechnologies.com/index.md

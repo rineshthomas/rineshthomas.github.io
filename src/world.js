@@ -8,6 +8,7 @@
 
   const atlas = element('flightAtlas');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const sky = window.logicOrbitSky;
   const sections = [...document.querySelectorAll('[data-zone]')];
   const interactive = 'a, button, input, select, textarea, label, summary, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="textbox"]';
   const editing = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
@@ -73,7 +74,7 @@
   let destination = null, tapPulse = false, playing = false;
   let uiOpen = false, editingFocus = false, layoutDirty = true, placeDirty = true;
   let raf = 0, lastFrame = 0, accumulator = 0, lastPulse = -Infinity, shield = 0;
-  let lastTrail = 0, trail = [], rings = [], sparks = [], labels = [];
+  let lastTrail = 0, trail = [], rings = [], sparks = [];
   const scene = () => scenes[state.zone];
   const lowPower = () => state.quality === 'low' || (state.quality === 'auto' && (width < 650 || navigator.connection?.saveData || navigator.hardwareConcurrency <= 4));
   const canFly = () => !state.paused && !state.suspended && !document.hidden;
@@ -273,8 +274,13 @@
     scale = width < 650 ? .75 : 1;
     dpr = Math.min(devicePixelRatio || 1, lowPower() ? 1.25 : 1.75);
     canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+    sky?.resize(lowPower());
     ship.x *= width / oldWidth; ship.y *= height / oldHeight;
-    if (destination) { destination.x *= width / oldWidth; destination.y *= height / oldHeight; }
+    if (destination) {
+      destination.pointerX *= width / oldWidth;
+      destination.pointerY *= height / oldHeight;
+      setLanding(destination.pointerX, destination.pointerY);
+    }
     trail = [];
     layoutDirty = placeDirty = true;
     request();
@@ -298,10 +304,8 @@
     target.anchor = [target.x / width, target.y / height];
     state.score += value;
     burst(target.x, target.y, art[target.kind].color, 12);
-    labels.push({x: target.x, y: target.y, age: 0, text: '+' + value, color: art[target.kind].color});
     if (goalTargets(target.zone).every(t => t.taken)) {
       scenes[target.zone].complete = true;
-      element('gameAnnouncer').textContent = chapters[target.zone].name + ' complete. Flight score ' + state.score + '.';
     }
   }
   function releaseCargo(target) {
@@ -334,6 +338,7 @@
     if (!canFly() || now - lastPulse < 420) return false;
     lastPulse = now;
     state.pulses++;
+    sky?.ripple(ship.x, ship.y);
     const reach = Math.max(86, 135 * scale);
     rings.push({x: ship.x, y: ship.y, reach, age: 0});
     for (const target of encounterTargets) {
@@ -357,15 +362,52 @@
     state.bumps++;
     burst(ship.x, ship.y, '#9edfff', 9);
   }
+  // Park beside a mouse pointer or above a fingertip. Near an edge, swing
+  // the same distance along the edge so the whole ship stays on screen.
+  function setLanding(x, y) {
+    const {gap, touch} = destination;
+    const inset = art.ship.size * scale * .4;
+    let dx, dy;
+    if (touch) {
+      dy = clamp(inset - y, -gap, gap);
+      dx = Math.sqrt(gap * gap - dy * dy);
+      if (x + dx > width - inset) dx = -dx;
+    } else {
+      dx = clamp(width - inset - x, -gap, gap);
+      dy = -Math.sqrt(gap * gap - dx * dx);
+      if (y + dy < inset) dy = -dy;
+    }
+    destination.x = clamp(x + dx, inset, width - inset);
+    destination.y = clamp(y + dy, inset, height - inset);
+  }
+  function keepPointerClear(dt) {
+    if (!destination) return;
+    const {pointerX, pointerY, x, y, gap} = destination;
+    const dx = ship.x - pointerX, dy = ship.y - pointerY;
+    if (dx * dx + dy * dy >= gap * gap) return;
+    // When the approach crosses the pointer, steer around its clear area.
+    const heading = Math.atan2(y - pointerY, x - pointerX);
+    const angle = dx || dy ? Math.atan2(dy, dx) : heading;
+    const turn = Math.atan2(Math.sin(heading - angle), Math.cos(heading - angle));
+    const next = angle + clamp(turn, -dt * 8, dt * 8);
+    const nextX = pointerX + Math.cos(next) * gap, nextY = pointerY + Math.sin(next) * gap;
+    if (nextX < 6 || nextY < 6 || nextX > width - 6 || nextY > height - 6) {
+      ship.x = x; ship.y = y;
+    } else {
+      ship.x = nextX; ship.y = nextY;
+    }
+  }
   function moveShip(dt) {
     let x = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
     let y = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
     const speed = clamp(Math.max(width, height) * .98, 660, 1550);
     // A tap on a moving object follows that object to its current position.
     // Hold the last position once it has been collected or the player steers away.
-    if (destination?.target && !destination.target.taken) {
-      destination.x = destination.target.x;
-      destination.y = destination.target.y;
+    if (destination?.touch && destination.target && !destination.target.taken) {
+      setLanding(destination.target.x, destination.target.y);
+      if (Math.hypot(destination.x - destination.pointerX, destination.y - destination.pointerY) < destination.gap) {
+        setLanding(destination.pointerX, destination.pointerY);
+      }
     }
     if (x || y) {
       const mag = Math.hypot(x, y);
@@ -398,19 +440,24 @@
     if (playing) {
       moveShip(dt);
       for (const target of encounterTargets) {
-        if (!inPlay(target) || target.taken || distance(ship, target) > radius(target) + 11 * scale) continue;
+        if (!inPlay(target) || target.taken) continue;
+        // An explicitly aimed pickup stays reachable across the steering gap.
+        // Obstacles still collide with the visible hull.
+        const aimedPickup = art[target.kind].points && destination?.target === target &&
+          distance(ship, destination) < 18 * scale && distance(ship, target) <= destination.gap + radius(target) + 18;
+        if (!aimedPickup && distance(ship, target) > radius(target) + 11 * scale) continue;
         if (target.kind === 'mine') {
           if (!shield && !target.cooldown) bump(target);
         } else if (target.kind === 'pod' || target.kind === 'meteor') {
           if (!shield) bump(target);
         } else collect(target);
       }
+      keepPointerClear(dt);
     }
     for (const p of sparks) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; }
-    for (const items of [rings, labels, trail]) for (const item of items) item.age += dt;
+    for (const items of [rings, trail]) for (const item of items) item.age += dt;
     sparks = sparks.filter(p => p.age < .55);
     rings = rings.filter(r => r.age < .44);
-    labels = labels.filter(label => label.age < .75);
     trail = trail.filter(p => p.age < .22);
   }
 
@@ -467,6 +514,7 @@
     }
   }
   function drawWorld() {
+    sky?.draw(state.time, state.position, playing ? ship : null);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
     for (const encounter of encounters) drawEncounter(encounter);
@@ -491,14 +539,6 @@
     ctx.globalAlpha = 1;
     sprite('ship', ship.x, ship.y, ship.angle);
     if (shield) circle(ship.x, ship.y, 25 * scale, '#c0ecff', shield / .85);
-    ctx.font = '600 14px system-ui'; ctx.textAlign = 'center'; ctx.lineWidth = 3;
-    for (const label of labels) {
-      const y = label.y - 16 - (reducedMotion.matches ? 0 : 22 * label.age);
-      ctx.globalAlpha = 1 - label.age / .75;
-      ctx.strokeStyle = '#102035'; ctx.fillStyle = label.color;
-      ctx.strokeText(label.text, label.x, y); ctx.fillText(label.text, label.x, y);
-    }
-    ctx.globalAlpha = 1;
     window.logicReadingSpace?.clear(ctx);
   }
   function frame(now) {
@@ -524,7 +564,7 @@
     drawWorld(); state.frames++;
     const travelling = destination && distance(ship, destination) > 2;
     if (reducedMotion.matches && !travelling && !tapPulse && !keys.size && Math.hypot(ship.vx, ship.vy) < 2 &&
-        !rings.length && !labels.length && !shield && !encounterTargets.some(target => target.cooldown > 0)) {
+        !rings.length && !shield && !encounterTargets.some(target => target.cooldown > 0)) {
       lastFrame = accumulator = 0;
       return;
     }
@@ -534,11 +574,10 @@
 
   function steerTo(x, y, onArrival = false) {
     if (!activate()) return;
-    destination = {x: clamp(x, 6, width - 6), y: clamp(y, 6, height - 6)};
-    if (onArrival) {
-      destination.target = encounterTargets.findLast(target =>
-        inPlay(target) && !target.taken && distance(destination, target) <= art[target.kind].size * scale / 2);
-    }
+    const target = encounterTargets.findLast(item => inPlay(item) && !item.taken &&
+      Math.hypot(x - item.x, y - item.y) <= art[item.kind].size * scale / 2);
+    destination = {pointerX: x, pointerY: y, touch: onArrival, gap: onArrival ? 60 : 42, target};
+    setLanding(x, y);
     tapPulse = onArrival;
   }
   // Pointer movement is independent of DOM hit-testing, including over links

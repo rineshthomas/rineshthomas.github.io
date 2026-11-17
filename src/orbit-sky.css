@@ -1,0 +1,47 @@
+.orbit-sky {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.world-backdrop .world-tint {
+  background:
+    radial-gradient(ellipse at 75% 25%, rgb(97 138 124 / 10%), transparent 44%),
+    linear-gradient(90deg, rgb(3 10 24 / 81%), rgb(5 13 29 / 45%) 37%, transparent 70%),
+    radial-gradient(ellipse at 82% 43%, transparent 14%, rgb(5 12 31 / 36%) 65%, rgb(4 10 22 / 72%)),
+    linear-gradient(0deg, rgb(5 13 26 / 66%), transparent 38%, rgb(6 16 34 / 10%) 72%, rgb(3 9 22 / 55%));
+}
+
+.world-backdrop .orbit-sky {
+  z-index: 6;
+  mask-image: linear-gradient(90deg, rgb(0 0 0 / 30%), rgb(0 0 0 / 52%) 32%, black 55%);
+}
+
+.page-hero .orbit-sky {
+  z-index: -1;
+  inset-inline: calc(-1 * var(--gutter));
+  width: calc(100% + 2 * var(--gutter));
+  opacity: .85;
+  mask-image: linear-gradient(90deg, transparent 5%, rgb(0 0 0 / 25%) 36%, black 66%);
+}
+@media (min-width: 721px) {
+  .page-hero::before {
+    background-image:
+      linear-gradient(90deg, var(--bg) 35%, color-mix(in srgb, var(--bg) 82%, transparent) 50%, transparent 76%),
+      linear-gradient(0deg, var(--bg), transparent 23%, transparent 78%, var(--bg)), var(--art);
+  }
+}
+
+@media (max-width: 650px) {
+  .world-backdrop .world-tint {
+    background:
+      linear-gradient(90deg, rgb(4 12 27 / 88%), rgb(5 14 29 / 60%) 56%, rgb(5 15 31 / 22%)),
+      linear-gradient(0deg, rgb(4 13 27 / 70%), transparent 54%, rgb(3 9 20 / 34%));
+  }
+  .world-backdrop .orbit-sky { mask-image: linear-gradient(90deg, rgb(0 0 0 / 34%), rgb(0 0 0 / 68%) 50%, black 78%); }
+  .page-hero .orbit-sky { mask-image: linear-gradient(90deg, transparent, rgb(0 0 0 / 45%) 52%, black); }
+}
+@media print { .orbit-sky { display: none; } }
