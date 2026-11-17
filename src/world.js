@@ -401,6 +401,9 @@
     let x = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
     let y = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
     const speed = clamp(Math.max(width, height) * .98, 660, 1550);
+    const landing = x || y ? null : destination;
+    let heading = destination?.heading;
+    let dx = 0, dy = 0;
     // A tap on a moving object follows that object to its current position.
     // Hold the last position once it has been collected or the player steers away.
     if (destination?.touch && destination.target && !destination.target.taken) {
@@ -410,27 +413,29 @@
       }
     }
     if (x || y) {
+      heading = Math.atan2(y, x);
       const mag = Math.hypot(x, y);
       x *= speed * .66 / mag; y *= speed * .66 / mag;
-    } else if (destination) {
-      const dx = destination.x - ship.x, dy = destination.y - ship.y;
+    } else if (landing) {
+      dx = landing.x - ship.x; dy = landing.y - ship.y;
       const gain = Math.min(7, speed / Math.max(1, Math.hypot(dx, dy)));
       x = dx * gain; y = dy * gain;
     }
     const ease = 1 - Math.exp(-dt * 15);
     ship.vx += (x - ship.vx) * ease;
     ship.vy += (y - ship.vy) * ease;
-    ship.x = clamp(ship.x + ship.vx * dt, 6, width - 6);
-    ship.y = clamp(ship.y + ship.vy * dt, 6, height - 6);
-    if (Math.hypot(ship.vx, ship.vy) > 8) {
-      const turn = Math.atan2(ship.vy, ship.vx) - ship.angle;
-      ship.angle += Math.atan2(Math.sin(turn), Math.cos(turn)) * (1 - Math.exp(-dt * 14));
-      if (!reducedMotion.matches && state.time - lastTrail > .034) {
-        trail.push({x: ship.x, y: ship.y, age: 0});
-        lastTrail = state.time;
-      }
+    const stepX = ship.vx * dt, stepY = ship.vy * dt;
+    const remainingSquared = dx * dx + dy * dy;
+    // Finish the approach on the step that would pass the landing point.
+    if (landing && (remainingSquared < .25 || stepX * dx + stepY * dy >= remainingSquared)) {
+      ship.x = landing.x; ship.y = landing.y;
+      ship.vx = ship.vy = 0;
+    } else {
+      ship.x = clamp(ship.x + stepX, 6, width - 6);
+      ship.y = clamp(ship.y + stepY, 6, height - 6);
     }
     if (tapPulse && destination && distance(ship, destination) < 48 * scale && pulse()) tapPulse = false;
+    return heading;
   }
   function step(dt) {
     state.time += dt;
@@ -438,7 +443,8 @@
     shield = Math.max(0, shield - dt);
     for (const target of encounterTargets) target.cooldown = Math.max(0, target.cooldown - dt);
     if (playing) {
-      moveShip(dt);
+      const fromX = ship.x, fromY = ship.y;
+      const heading = moveShip(dt);
       for (const target of encounterTargets) {
         if (!inPlay(target) || target.taken) continue;
         // An explicitly aimed pickup stays reachable across the steering gap.
@@ -453,6 +459,16 @@
         } else collect(target);
       }
       keepPointerClear(dt);
+      if (Math.hypot(ship.x - fromX, ship.y - fromY) > 8 * dt) {
+        if (heading !== undefined) {
+          const turn = heading - ship.angle;
+          ship.angle += Math.atan2(Math.sin(turn), Math.cos(turn)) * (1 - Math.exp(-dt * 14));
+        }
+        if (!reducedMotion.matches && state.time - lastTrail > .034) {
+          trail.push({x: ship.x, y: ship.y, age: 0});
+          lastTrail = state.time;
+        }
+      }
     }
     for (const p of sparks) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; }
     for (const items of [rings, trail]) for (const item of items) item.age += dt;
@@ -574,10 +590,18 @@
 
   function steerTo(x, y, onArrival = false) {
     if (!activate()) return;
+    const previous = destination;
     const target = encounterTargets.findLast(item => inPlay(item) && !item.taken &&
       Math.hypot(x - item.x, y - item.y) <= art[item.kind].size * scale / 2);
-    destination = {pointerX: x, pointerY: y, touch: onArrival, gap: onArrival ? 60 : 42, target};
+    destination = {pointerX: x, pointerY: y, touch: onArrival, gap: onArrival ? 60 : 42, target,
+      heading: previous?.heading ?? ship.angle};
     setLanding(x, y);
+    // Set the course on a new steering command. Braking, fingertip clearance
+    // and repeated clicks at the same spot must not turn the nose back.
+    if ((!previous || x !== previous.pointerX || y !== previous.pointerY || onArrival !== previous.touch) &&
+        distance(ship, destination) > 2) {
+      destination.heading = Math.atan2(destination.y - ship.y, destination.x - ship.x);
+    }
     tapPulse = onArrival;
   }
   // Pointer movement is independent of DOM hit-testing, including over links
