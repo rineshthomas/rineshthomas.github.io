@@ -598,9 +598,10 @@
     setLanding(x, y);
     // Set the course on a new steering command. Braking, fingertip clearance
     // and repeated clicks at the same spot must not turn the nose back.
-    if ((!previous || x !== previous.pointerX || y !== previous.pointerY || onArrival !== previous.touch) &&
-        distance(ship, destination) > 2) {
-      destination.heading = Math.atan2(destination.y - ship.y, destination.x - ship.x);
+    const inputMoved = !previous || x !== previous.pointerX || y !== previous.pointerY || onArrival !== previous.touch;
+    const dx = destination.x - ship.x, dy = destination.y - ship.y;
+    if (inputMoved && (dx || dy)) {
+      destination.heading = Math.atan2(dy, dx);
     }
     tapPulse = onArrival;
   }
