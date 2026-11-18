@@ -279,6 +279,10 @@
     if (destination) {
       destination.pointerX *= width / oldWidth;
       destination.pointerY *= height / oldHeight;
+      if (!destination.touch) {
+        destination.sampleX = destination.pointerX;
+        destination.sampleY = destination.pointerY;
+      }
       setLanding(destination.pointerX, destination.pointerY);
     }
     trail = [];
@@ -362,23 +366,29 @@
     state.bumps++;
     burst(ship.x, ship.y, '#9edfff', 9);
   }
-  // Park beside a mouse pointer or above a fingertip. Near an edge, swing
-  // the same distance along the edge so the whole ship stays on screen.
+  // When the trailing position falls outside the viewport, take the nearest
+  // end of the remaining chord that keeps the hull on screen.
+  function fitAlongEdge(preferred, fixed, gap, min, max) {
+    const span = Math.sqrt(Math.max(0, gap * gap - fixed * fixed));
+    const offset = preferred < 0 ? -span : span;
+    return offset >= min && offset <= max ? offset : -offset;
+  }
   function setLanding(x, y) {
     const {gap, touch} = destination;
     const inset = art.ship.size * scale * .4;
-    let dx, dy;
-    if (touch) {
-      dy = clamp(inset - y, -gap, gap);
-      dx = Math.sqrt(gap * gap - dy * dy);
-      if (x + dx > width - inset) dx = -dx;
-    } else {
-      dx = clamp(width - inset - x, -gap, gap);
-      dy = -Math.sqrt(gap * gap - dx * dx);
-      if (y + dy < inset) dy = -dy;
+    const backX = touch ? 0 : -gap * Math.cos(destination.course);
+    const backY = touch ? -gap : -gap * Math.sin(destination.course);
+    const minX = inset - x, maxX = width - inset - x;
+    const minY = inset - y, maxY = height - inset - y;
+    let dy = clamp(backY, minY, maxY);
+    const alongX = dy === backY ? backX : fitAlongEdge(backX, dy, gap, minX, maxX);
+    const dx = clamp(alongX, minX, maxX);
+    if (!touch && dx !== alongX) {
+      dy = clamp(fitAlongEdge(backY, dx, gap, minY, maxY), minY, maxY);
     }
-    destination.x = clamp(x + dx, inset, width - inset);
-    destination.y = clamp(y + dy, inset, height - inset);
+    destination.x = x + dx;
+    destination.y = y + dy;
+    if (!touch) destination.heading = Math.atan2(-dy, -dx);
   }
   function keepPointerClear(dt) {
     if (!destination) return;
@@ -595,12 +605,23 @@
       Math.hypot(x - item.x, y - item.y) <= art[item.kind].size * scale / 2);
     destination = {pointerX: x, pointerY: y, touch: onArrival, gap: onArrival ? 60 : 42, target,
       heading: previous?.heading ?? ship.angle};
+    if (!onArrival) {
+      // Use mouse travel for the trailing side. Accumulate subpixel events
+      // so a slow sweep steers and a tiny tremor at rest keeps its course.
+      const lastMouse = previous && !previous.touch ? previous : null;
+      const sampleX = lastMouse?.sampleX ?? ship.x, sampleY = lastMouse?.sampleY ?? ship.y;
+      const dx = x - sampleX, dy = y - sampleY;
+      const newCourse = !lastMouse || dx * dx + dy * dy >= 16;
+      destination.course = newCourse && (dx || dy) ? Math.atan2(dy, dx) : lastMouse?.course ?? ship.angle;
+      destination.sampleX = newCourse ? x : sampleX;
+      destination.sampleY = newCourse ? y : sampleY;
+    }
     setLanding(x, y);
-    // Set the course on a new steering command. Braking, fingertip clearance
-    // and repeated clicks at the same spot must not turn the nose back.
+    // A tap flies toward its landing above the finger. Repeated taps there
+    // keep the arrival heading.
     const inputMoved = !previous || x !== previous.pointerX || y !== previous.pointerY || onArrival !== previous.touch;
     const dx = destination.x - ship.x, dy = destination.y - ship.y;
-    if (inputMoved && (dx || dy)) {
+    if (onArrival && inputMoved && (dx || dy)) {
       destination.heading = Math.atan2(dy, dx);
     }
     tapPulse = onArrival;
