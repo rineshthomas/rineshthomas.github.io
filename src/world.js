@@ -9,6 +9,7 @@
   const atlas = element('flightAtlas');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const sky = window.logicOrbitSky;
+  const textResponse = window.logicReactiveText;
   const sections = [...document.querySelectorAll('[data-zone]')];
   const interactive = 'a, button, input, select, textarea, label, summary, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="textbox"]';
   const editing = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]';
@@ -18,6 +19,7 @@
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const turnBetween = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
   const mouseGap = 48, fingerGap = 68; // CSS pixels from the input point to the hull center.
+  const holdToSteerMs = 220, holdSlop = 6;
 
   // Cell order matches the illustrated atlas. Sizes are logical desktop pixels.
   const art = {
@@ -192,7 +194,7 @@
   }
   function positionTargets(dt = 0) {
     const t = reducedMotion.matches ? 0 : state.time;
-    const reading = window.logicReadingSpace?.rects();
+    const covers = window.logicReadingSpace?.covers();
     for (const target of encounterTargets) {
       const {kind, anchor, phase, goal} = target;
       // Reflow chooses a destination. Glide there from the point that was drawn
@@ -217,7 +219,7 @@
       const pad = radius(target) + 2;
       target.x = clamp(x, pad, width - pad);
       target.y = clamp(y, pad, height - pad);
-      target.occluded = reading && meetsControl(target.x, target.y, 0, 0, reading);
+      target.occluded = covers && meetsControl(target.x, target.y, 0, 0, covers);
     }
   }
   let checkTouchClearance = false;
@@ -575,6 +577,7 @@
 
   function sprite(kind, x, y, angle = 0, opacity = 1) {
     const {cell, size} = art[kind], side = size * scale;
+    textResponse?.addBody(x, y, side * .36, opacity);
     ctx.save();
     ctx.translate(x, y); ctx.rotate(angle); ctx.globalAlpha = opacity;
     if (kind === 'ship' && ship.bank && !reducedMotion.matches) {
@@ -630,6 +633,7 @@
     }
   }
   function drawWorld() {
+    textResponse?.beginFrame();
     sky?.draw(state.time, state.position, playing ? ship : null);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
@@ -655,6 +659,7 @@
     ctx.globalAlpha = 1;
     sprite('ship', ship.x, ship.y, ship.angle);
     if (shield) circle(ship.x, ship.y, 25 * scale, '#c0ecff', shield / .85);
+    textResponse?.render(canFly());
     window.logicReadingSpace?.clear(ctx);
   }
   function frame(now) {
@@ -749,30 +754,36 @@
     const contact = {startX: point.clientX, startY: point.clientY, x: point.clientX, y: point.clientY, steering: false};
     finger = contact;
     if (!canFly()) return;
-    // A quick tap is handled by click. A resting finger can steer before lift,
-    // while an ordinary swipe has time to go straight to native scrolling.
+    // Only a stationary hold claims the drag. Early movement belongs to the
+    // browser for this entire contact, even if the finger subsequently stops.
     contact.timer = setTimeout(() => {
       if (getSelection()?.toString()) { releaseFinger(); return; }
       contact.steering = true;
       steerTo(contact.x, contact.y, {touch: true, pulseOnArrival: false});
-    }, 110);
+    }, holdToSteerMs);
   }, {passive: true});
-  // Browsers can cancel pointer events while still reporting the native
-  // touch stream. Passive observation leaves scrolling and zoom to the page.
-  document.addEventListener('touchmove', event => {
-    if (!finger || event.touches.length !== 1) return;
-    if (getSelection()?.isCollapsed === false) { ignoreTouchClick = true; releaseFinger(); return; }
+  // Register before contact so the first move of an armed drag is cancelable
+  // on mobile WebKit as well. Ordinary swipes never cancel a browser event.
+  document.body.addEventListener('touchmove', event => {
+    if (!finger) return;
+    if (event.touches.length !== 1 || !event.cancelable || getSelection()?.isCollapsed === false) {
+      ignoreTouchClick = true;
+      releaseFinger();
+      return;
+    }
     const point = event.touches[0];
     finger.x = point.clientX; finger.y = point.clientY;
-    const dx = finger.x - finger.startX, dy = finger.y - finger.startY;
-    if (Math.hypot(dx, dy) > 8) {
-      ignoreTouchClick = true;
-      if (Math.abs(dy) >= Math.abs(dx)) { releaseFinger(); return; }
-      clearTimeout(finger.timer);
-      finger.steering = true;
+    if (!finger.steering) {
+      if (Math.hypot(finger.x - finger.startX, finger.y - finger.startY) > holdSlop) {
+        ignoreTouchClick = true;
+        releaseFinger();
+      }
+      return;
     }
-    if (finger.steering) steerTo(finger.x, finger.y, {touch: true, pulseOnArrival: false});
-  }, {passive: true});
+    event.preventDefault();
+    ignoreTouchClick = true;
+    steerTo(finger.x, finger.y, {touch: true, pulseOnArrival: false});
+  }, {passive: false});
   document.addEventListener('touchend', event => {
     if (finger && !ignoreTouchClick && !event.touches.length) {
       const point = event.changedTouches[0];

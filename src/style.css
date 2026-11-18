@@ -7,10 +7,31 @@
   inset: -1px;
   z-index: 0;
   pointer-events: none;
-  border: 1px solid var(--line);
   border-radius: inherit;
   background: var(--panel);
   backdrop-filter: blur(12px);
+}
+.content-panel::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  pointer-events: none;
+  border: 1px solid var(--line);
+  border-radius: inherit;
+  background: rgb(7 19 34 / 14%);
+}
+#main .flight-word {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  color: inherit;
+  text-shadow: 0 1px 2px rgb(3 12 22 / 48%);
+}
+@media print {
+  #main .flight-word { display: inline; transform: none !important; text-shadow: none; }
+  .content-panel::after { display: none; }
 }
 .content-panel > *, .hero-copy, .site-footer > * { position: relative; z-index: 2; }
 .scroll-cue { z-index: 2; }
