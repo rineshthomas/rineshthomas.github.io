@@ -17,6 +17,7 @@
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const turnBetween = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+  const mouseGap = 48, fingerGap = 68; // CSS pixels from the input point to the hull center.
 
   // Cell order matches the illustrated atlas. Sizes are logical desktop pixels.
   const art = {
@@ -73,6 +74,7 @@
   const ship = {x: width * .79, y: height * .54, vx: 0, vy: 0, angle: -.22, turnRate: 0, bank: 0};
   const keys = new Set();
   let destination = null, tapPulse = false, playing = false;
+  let finger = null, tapPoint = null, ignoreTouchClick = false;
   let uiOpen = false, editingFocus = false, layoutDirty = true, placeDirty = true;
   let raf = 0, lastFrame = 0, accumulator = 0, lastPulse = -Infinity, shield = 0;
   let lastTrail = 0, trail = [], rings = [], sparks = [];
@@ -93,6 +95,7 @@
     return true;
   }
   function clearInput() {
+    releaseFinger();
     keys.clear();
     destination = null;
     tapPulse = false;
@@ -409,8 +412,18 @@
       ship.x = nextX; ship.y = nextY;
     }
   }
-  function glideToMouse(dt, maxSpeed) {
-    const {pointerX, pointerY, gap} = destination;
+  function updateLanding(dt) {
+    const {pointerX, pointerY, target} = destination;
+    if (destination.touch) {
+      if (target && !target.taken) {
+        // Follow tapped cargo without landing under the original fingertip.
+        setLanding(target.x, target.y);
+        if (Math.hypot(destination.x - pointerX, destination.y - pointerY) < destination.gap) {
+          setLanding(pointerX, pointerY);
+        }
+      }
+      return;
+    }
     const courseChange = turnBetween(destination.course, destination.wantedCourse);
     if (Math.abs(courseChange) > .001) {
       destination.course += clamp(courseChange * (1 - Math.exp(-10 * dt)), -6 * dt, 6 * dt);
@@ -419,6 +432,9 @@
       destination.course = destination.wantedCourse;
       setLanding(pointerX, pointerY);
     }
+  }
+  function glideToPointer(dt, maxSpeed) {
+    const {pointerX, pointerY, gap, touch} = destination;
     const toX = pointerX - ship.x, toY = pointerY - ship.y;
     const range = Math.hypot(toX, toY);
     const inset = art.ship.size * scale * .4;
@@ -458,18 +474,20 @@
       ship.x = destination.x; ship.y = destination.y;
       ship.vx = ship.vy = ship.turnRate = 0;
     } else if (speed > 4) {
-      // Look into the turn while the hull carries its old momentum. The
-      // cursor stays ahead of the nose during braking, even on a short coast.
-      const lead = Math.min(.09, .6 * range / speed);
-      const sight = range > 1
-        ? Math.atan2(pointerY - ship.y + ship.vy * lead, pointerX - ship.x + ship.vx * lead)
+      // Mouse flight looks toward the cursor. Touch flight looks along the
+      // approach above the finger, so the nose holds its heading on arrival.
+      const lookX = (touch ? aimX : pointerX) - ship.x, lookY = (touch ? aimY : pointerY) - ship.y;
+      const lookDistance = Math.hypot(lookX, lookY);
+      const lead = Math.min(.09, .6 * lookDistance / speed);
+      const sight = lookDistance > 1
+        ? Math.atan2(lookY + ship.vy * lead, lookX + ship.vx * lead)
         : destination.heading;
       const heading = destination.heading + turnBetween(destination.heading, sight) * Math.min(1, remaining / (art.ship.size * scale));
       const yawAcceleration = clamp(144 * turnBetween(ship.angle, heading) - 24 * ship.turnRate, -42, 42);
       ship.turnRate = clamp(ship.turnRate + yawAcceleration * dt, -6.4, 6.4);
       ship.angle += ship.turnRate * dt;
     }
-    const roll = clamp(ship.turnRate * .18, -.82, .82) * Math.min(1, speed / 180);
+    const roll = clamp(ship.turnRate * .18, -.82, .82) * Math.min(1, speed / (180 * scale));
     ship.bank += (roll - ship.bank) * (1 - Math.exp(-10 * dt));
     if (Math.abs(ship.bank) < .001 && !roll) ship.bank = 0;
   }
@@ -478,23 +496,18 @@
     let y = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
     const speed = clamp(Math.max(width, height) * .98, 660, 1550);
     const landing = x || y ? null : destination;
-    if (landing && !landing.touch && !reducedMotion.matches) {
-      glideToMouse(dt, speed);
-      return;
+    if (landing) {
+      updateLanding(dt);
+      if (!reducedMotion.matches) {
+        glideToPointer(dt, speed);
+        return;
+      }
     }
     ship.turnRate = 0;
     ship.bank *= Math.exp(-12 * dt);
     if (Math.abs(ship.bank) < .001) ship.bank = 0;
     let heading = destination?.heading;
     let dx = 0, dy = 0;
-    // A tap on a moving object follows that object to its current position.
-    // Hold the last position once it has been collected or the player steers away.
-    if (destination?.touch && destination.target && !destination.target.taken) {
-      setLanding(destination.target.x, destination.target.y);
-      if (Math.hypot(destination.x - destination.pointerX, destination.y - destination.pointerY) < destination.gap) {
-        setLanding(destination.pointerX, destination.pointerY);
-      }
-    }
     if (x || y) {
       heading = Math.atan2(y, x);
       const mag = Math.hypot(x, y);
@@ -517,7 +530,6 @@
       ship.x = clamp(ship.x + stepX, 6, width - 6);
       ship.y = clamp(ship.y + stepY, 6, height - 6);
     }
-    if (tapPulse && destination && distance(ship, destination) < 48 * scale && pulse()) tapPulse = false;
     return heading;
   }
   function step(dt) {
@@ -528,6 +540,7 @@
     if (playing) {
       const fromX = ship.x, fromY = ship.y;
       const heading = moveShip(dt);
+      if (tapPulse && destination && distance(ship, destination) < 48 * scale && pulse()) tapPulse = false;
       for (const target of encounterTargets) {
         if (!inPlay(target) || target.taken) continue;
         // An explicitly aimed pickup stays reachable across the steering gap.
@@ -541,7 +554,7 @@
           if (!shield) bump(target);
         } else collect(target);
       }
-      if (destination?.touch || reducedMotion.matches) keepPointerClear(dt);
+      if (reducedMotion.matches) keepPointerClear(dt);
       if (Math.hypot(ship.x - fromX, ship.y - fromY) > 8 * dt) {
         if (heading !== undefined) {
           ship.angle += turnBetween(ship.angle, heading) * (1 - Math.exp(-dt * 14));
@@ -675,14 +688,27 @@
   }
   function request() { if (!raf && !document.hidden) raf = requestAnimationFrame(frame); }
 
-  function steerTo(x, y, onArrival = false) {
+  function targetAt(x, y) {
+    let closest = null, nearest = Infinity;
+    for (const item of encounterTargets) {
+      if (item.taken || !inPlay(item)) continue;
+      const range = Math.hypot(x - item.x, y - item.y);
+      // Released shards can overlap. Prefer the center the player aimed at,
+      // with the last-painted item winning an exact tie.
+      if (range <= art[item.kind].size * scale / 2 && range <= nearest) {
+        closest = item;
+        nearest = range;
+      }
+    }
+    return closest;
+  }
+  function steerTo(x, y, {touch = false, pulseOnArrival = touch} = {}) {
     if (!activate()) return;
     const previous = destination;
-    const target = encounterTargets.findLast(item => inPlay(item) && !item.taken &&
-      Math.hypot(x - item.x, y - item.y) <= art[item.kind].size * scale / 2);
-    destination = {pointerX: x, pointerY: y, touch: onArrival, gap: onArrival ? 60 : 42, target,
+    const target = touch && !pulseOnArrival ? null : targetAt(x, y);
+    destination = {pointerX: x, pointerY: y, touch, gap: touch ? fingerGap : mouseGap, target,
       heading: previous?.heading ?? ship.angle};
-    if (!onArrival) {
+    if (!touch) {
       // Use mouse travel for the trailing side. Accumulate subpixel events
       // so a slow sweep steers and a tiny tremor at rest keeps its course.
       const lastMouse = previous && !previous.touch ? previous : null;
@@ -697,27 +723,80 @@
     setLanding(x, y);
     // A tap flies toward its landing above the finger. Repeated taps there
     // keep the arrival heading.
-    const inputMoved = !previous || x !== previous.pointerX || y !== previous.pointerY || onArrival !== previous.touch;
+    const inputMoved = !previous || x !== previous.pointerX || y !== previous.pointerY || touch !== previous.touch;
     const dx = destination.x - ship.x, dy = destination.y - ship.y;
-    if (onArrival && inputMoved && (dx || dy)) {
+    if (touch && inputMoved && (dx || dy)) {
       destination.heading = Math.atan2(dy, dx);
     }
-    tapPulse = onArrival;
+    tapPulse = pulseOnArrival;
   }
-  // Pointer movement is independent of DOM hit-testing, including over links
-  // and form controls. Clicks and keyboard input still belong to native widgets.
+  function releaseFinger() {
+    if (finger) clearTimeout(finger.timer);
+    finger = null;
+  }
+  let lastPointerType = '';
+  document.addEventListener('pointerdown', event => {
+    lastPointerType = event.pointerType;
+    if (lastPointerType !== 'touch') tapPoint = null;
+  }, {passive: true});
+  document.addEventListener('touchstart', event => {
+    releaseFinger();
+    lastPointerType = 'touch';
+    tapPoint = null;
+    ignoreTouchClick = event.touches.length !== 1;
+    if (ignoreTouchClick || event.target.closest(interactive) || getSelection()?.isCollapsed === false) return;
+    const point = event.touches[0];
+    const contact = {startX: point.clientX, startY: point.clientY, x: point.clientX, y: point.clientY, steering: false};
+    finger = contact;
+    if (!canFly()) return;
+    // A quick tap is handled by click. A resting finger can steer before lift,
+    // while an ordinary swipe has time to go straight to native scrolling.
+    contact.timer = setTimeout(() => {
+      if (getSelection()?.toString()) { releaseFinger(); return; }
+      contact.steering = true;
+      steerTo(contact.x, contact.y, {touch: true, pulseOnArrival: false});
+    }, 110);
+  }, {passive: true});
+  // Browsers can cancel pointer events while still reporting the native
+  // touch stream. Passive observation leaves scrolling and zoom to the page.
+  document.addEventListener('touchmove', event => {
+    if (!finger || event.touches.length !== 1) return;
+    if (getSelection()?.isCollapsed === false) { ignoreTouchClick = true; releaseFinger(); return; }
+    const point = event.touches[0];
+    finger.x = point.clientX; finger.y = point.clientY;
+    const dx = finger.x - finger.startX, dy = finger.y - finger.startY;
+    if (Math.hypot(dx, dy) > 8) {
+      ignoreTouchClick = true;
+      if (Math.abs(dy) >= Math.abs(dx)) { releaseFinger(); return; }
+      clearTimeout(finger.timer);
+      finger.steering = true;
+    }
+    if (finger.steering) steerTo(finger.x, finger.y, {touch: true, pulseOnArrival: false});
+  }, {passive: true});
+  document.addEventListener('touchend', event => {
+    if (finger && !ignoreTouchClick && !event.touches.length) {
+      const point = event.changedTouches[0];
+      tapPoint = {x: point.clientX, y: point.clientY};
+    }
+    releaseFinger();
+  }, {passive: true});
+  document.addEventListener('touchcancel', () => { ignoreTouchClick = true; releaseFinger(); }, {passive: true});
   document.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch' || event.buttons || event.target.closest('#mobileNav')) return;
+    if (event.pointerType === 'touch' || event.buttons || finger || event.target.closest('#mobileNav')) return;
     steerTo(event.clientX, event.clientY);
   }, {passive: true});
-  let lastPointerType = '';
-  document.addEventListener('pointerdown', event => { lastPointerType = event.pointerType; }, {passive: true});
   document.addEventListener('click', event => {
     if (!event.detail || event.defaultPrevented || event.target.closest(interactive) || getSelection()?.toString()) return;
-    const touch = (event.pointerType || lastPointerType) === 'touch' || event.sourceCapabilities?.firesTouchEvents;
+    // WebKit can label a tap's compatibility click as a mouse click. Use
+    // the originating contact and its unadjusted coordinates for flight.
+    const touch = lastPointerType === 'touch' || event.pointerType === 'touch' || event.sourceCapabilities?.firesTouchEvents;
+    if (touch && ignoreTouchClick) return;
+    const x = touch && tapPoint ? tapPoint.x : event.clientX;
+    const y = touch && tapPoint ? tapPoint.y : event.clientY;
+    tapPoint = null;
     // A returning touch player can resume a saved pause by tapping the playfield.
     if (touch && state.paused && !state.suspended) pause(false);
-    steerTo(event.clientX, event.clientY, touch);
+    steerTo(x, y, {touch});
     if (!touch) pulse();
   });
   const flightKeys = new Set(['a','s','d','w','arrowup','arrowdown','arrowleft','arrowright',' ']);
@@ -741,6 +820,7 @@
   function checkLayout() { checkTouchClearance = layoutDirty = true; request(); }
   let scrollTimer;
   addEventListener('scroll', () => {
+    if (finger) { ignoreTouchClick = true; releaseFinger(); }
     layoutDirty = true;
     request();
     clearTimeout(scrollTimer);
