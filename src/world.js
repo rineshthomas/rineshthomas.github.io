@@ -16,6 +16,7 @@
   const tau = Math.PI * 2;
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const turnBetween = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
 
   // Cell order matches the illustrated atlas. Sizes are logical desktop pixels.
   const art = {
@@ -69,7 +70,7 @@
   let encounters = [scenes[0]], encounterTargets = scenes[0].targets;
   let destinationPosition = 0, lastJourneyFrame = 0, journeyReady = false;
   let width = innerWidth, height = innerHeight, scale = 1, dpr = 1;
-  const ship = {x: width * .79, y: height * .54, vx: 0, vy: 0, angle: -.22};
+  const ship = {x: width * .79, y: height * .54, vx: 0, vy: 0, angle: -.22, turnRate: 0, bank: 0};
   const keys = new Set();
   let destination = null, tapPulse = false, playing = false;
   let uiOpen = false, editingFocus = false, layoutDirty = true, placeDirty = true;
@@ -96,6 +97,7 @@
     destination = null;
     tapPulse = false;
     ship.vx = ship.vy = 0;
+    ship.turnRate = ship.bank = 0;
     playing = false;
     trail = [];
   }
@@ -398,7 +400,7 @@
     // When the approach crosses the pointer, steer around its clear area.
     const heading = Math.atan2(y - pointerY, x - pointerX);
     const angle = dx || dy ? Math.atan2(dy, dx) : heading;
-    const turn = Math.atan2(Math.sin(heading - angle), Math.cos(heading - angle));
+    const turn = turnBetween(angle, heading);
     const next = angle + clamp(turn, -dt * 8, dt * 8);
     const nextX = pointerX + Math.cos(next) * gap, nextY = pointerY + Math.sin(next) * gap;
     if (nextX < 6 || nextY < 6 || nextX > width - 6 || nextY > height - 6) {
@@ -407,11 +409,82 @@
       ship.x = nextX; ship.y = nextY;
     }
   }
+  function glideToMouse(dt, maxSpeed) {
+    const {pointerX, pointerY, gap} = destination;
+    const courseChange = turnBetween(destination.course, destination.wantedCourse);
+    if (Math.abs(courseChange) > .001) {
+      destination.course += clamp(courseChange * (1 - Math.exp(-10 * dt)), -6 * dt, 6 * dt);
+      setLanding(pointerX, pointerY);
+    } else if (destination.course !== destination.wantedCourse) {
+      destination.course = destination.wantedCourse;
+      setLanding(pointerX, pointerY);
+    }
+    const toX = pointerX - ship.x, toY = pointerY - ship.y;
+    const range = Math.hypot(toX, toY);
+    const inset = art.ship.size * scale * .4;
+    let aimX = destination.x, aimY = destination.y;
+
+    // On a reversal, steer toward a point partway around the cursor. This
+    // bends the flight path without moving the hull directly onto a circle.
+    const edgeDistance = Math.min(pointerX, width - pointerX, pointerY, height - pointerY);
+    if (range > 1 && edgeDistance > gap + inset) {
+      const radial = Math.atan2(-toY, -toX);
+      const sweep = turnBetween(radial, Math.atan2(aimY - pointerY, aimX - pointerX));
+      const tangent = Math.acos(Math.min(1, gap * .82 / range)) + Math.acos(.82);
+      if (Math.abs(sweep) > tangent) {
+        const guide = radial + Math.sign(sweep) * tangent;
+        aimX = pointerX + gap * Math.cos(guide);
+        aimY = pointerY + gap * Math.sin(guide);
+      }
+    }
+
+    // A damped spring retains velocity across input events. Limit thrust on
+    // long flicks and let drag finish the last few pixels of the approach.
+    const dx = aimX - ship.x, dy = aimY - ship.y;
+    const gain = Math.min(5, maxSpeed / Math.max(1, Math.hypot(dx, dy)));
+    const dvx = dx * gain - ship.vx, dvy = dy * gain - ship.vy;
+    const response = Math.min(1 - Math.exp(-20 * dt), maxSpeed * 5 * dt / Math.max(1, Math.hypot(dvx, dvy)));
+    ship.vx += dvx * response;
+    ship.vy += dvy * response;
+    const nextX = ship.x + ship.vx * dt, nextY = ship.y + ship.vy * dt;
+    ship.x = clamp(nextX, inset, width - inset);
+    ship.y = clamp(nextY, inset, height - inset);
+    if (ship.x !== nextX) ship.vx = 0;
+    if (ship.y !== nextY) ship.vy = 0;
+
+    const speed = Math.hypot(ship.vx, ship.vy);
+    const remaining = distance(ship, destination);
+    if (remaining < .35 && speed < 4) {
+      ship.x = destination.x; ship.y = destination.y;
+      ship.vx = ship.vy = ship.turnRate = 0;
+    } else if (speed > 4) {
+      // Look into the turn while the hull carries its old momentum. The
+      // cursor stays ahead of the nose during braking, even on a short coast.
+      const lead = Math.min(.09, .6 * range / speed);
+      const sight = range > 1
+        ? Math.atan2(pointerY - ship.y + ship.vy * lead, pointerX - ship.x + ship.vx * lead)
+        : destination.heading;
+      const heading = destination.heading + turnBetween(destination.heading, sight) * Math.min(1, remaining / (art.ship.size * scale));
+      const yawAcceleration = clamp(144 * turnBetween(ship.angle, heading) - 24 * ship.turnRate, -42, 42);
+      ship.turnRate = clamp(ship.turnRate + yawAcceleration * dt, -6.4, 6.4);
+      ship.angle += ship.turnRate * dt;
+    }
+    const roll = clamp(ship.turnRate * .18, -.82, .82) * Math.min(1, speed / 180);
+    ship.bank += (roll - ship.bank) * (1 - Math.exp(-10 * dt));
+    if (Math.abs(ship.bank) < .001 && !roll) ship.bank = 0;
+  }
   function moveShip(dt) {
     let x = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
     let y = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
     const speed = clamp(Math.max(width, height) * .98, 660, 1550);
     const landing = x || y ? null : destination;
+    if (landing && !landing.touch && !reducedMotion.matches) {
+      glideToMouse(dt, speed);
+      return;
+    }
+    ship.turnRate = 0;
+    ship.bank *= Math.exp(-12 * dt);
+    if (Math.abs(ship.bank) < .001) ship.bank = 0;
     let heading = destination?.heading;
     let dx = 0, dy = 0;
     // A tap on a moving object follows that object to its current position.
@@ -468,14 +541,14 @@
           if (!shield) bump(target);
         } else collect(target);
       }
-      keepPointerClear(dt);
+      if (destination?.touch || reducedMotion.matches) keepPointerClear(dt);
       if (Math.hypot(ship.x - fromX, ship.y - fromY) > 8 * dt) {
         if (heading !== undefined) {
-          const turn = heading - ship.angle;
-          ship.angle += Math.atan2(Math.sin(turn), Math.cos(turn)) * (1 - Math.exp(-dt * 14));
+          ship.angle += turnBetween(ship.angle, heading) * (1 - Math.exp(-dt * 14));
         }
         if (!reducedMotion.matches && state.time - lastTrail > .034) {
-          trail.push({x: ship.x, y: ship.y, age: 0});
+          const exhaust = art.ship.size * scale * .40;
+          trail.push({x: ship.x - exhaust * Math.cos(ship.angle), y: ship.y - exhaust * Math.sin(ship.angle), age: 0});
           lastTrail = state.time;
         }
       }
@@ -491,6 +564,10 @@
     const {cell, size} = art[kind], side = size * scale;
     ctx.save();
     ctx.translate(x, y); ctx.rotate(angle); ctx.globalAlpha = opacity;
+    if (kind === 'ship' && ship.bank) {
+      // Project roll about the nose-to-tail axis onto the illustrated wings.
+      ctx.transform(1, 0, .34 * Math.sin(ship.bank), Math.cos(ship.bank), 0, 0);
+    }
     if (atlas.complete && atlas.naturalWidth) {
       const cellSize = atlas.naturalWidth / 3;
       ctx.drawImage(atlas, (cell % 3) * cellSize, Math.floor(cell / 3) * cellSize,
@@ -612,7 +689,8 @@
       const sampleX = lastMouse?.sampleX ?? ship.x, sampleY = lastMouse?.sampleY ?? ship.y;
       const dx = x - sampleX, dy = y - sampleY;
       const newCourse = !lastMouse || dx * dx + dy * dy >= 16;
-      destination.course = newCourse && (dx || dy) ? Math.atan2(dy, dx) : lastMouse?.course ?? ship.angle;
+      destination.wantedCourse = newCourse && (dx || dy) ? Math.atan2(dy, dx) : lastMouse?.wantedCourse ?? ship.angle;
+      destination.course = reducedMotion.matches ? destination.wantedCourse : lastMouse?.course ?? destination.wantedCourse;
       destination.sampleX = newCourse ? x : sampleX;
       destination.sampleY = newCourse ? y : sampleY;
     }
