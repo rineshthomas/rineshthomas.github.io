@@ -504,7 +504,7 @@
       }
     }
     ship.turnRate = 0;
-    ship.bank *= Math.exp(-12 * dt);
+    ship.bank = reducedMotion.matches ? 0 : ship.bank * Math.exp(-12 * dt);
     if (Math.abs(ship.bank) < .001) ship.bank = 0;
     let heading = destination?.heading;
     let dx = 0, dy = 0;
@@ -577,7 +577,7 @@
     const {cell, size} = art[kind], side = size * scale;
     ctx.save();
     ctx.translate(x, y); ctx.rotate(angle); ctx.globalAlpha = opacity;
-    if (kind === 'ship' && ship.bank) {
+    if (kind === 'ship' && ship.bank && !reducedMotion.matches) {
       // Project roll about the nose-to-tail axis onto the illustrated wings.
       ctx.transform(1, 0, .34 * Math.sin(ship.bank), Math.cos(ship.bank), 0, 0);
     }
